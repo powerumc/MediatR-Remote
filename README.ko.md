@@ -3,9 +3,9 @@
 ## MediatR.Remote 는 무엇입니까?
 
 MediatR.Remote 라이브러리는 원격 개체를 분산하여 중계하는 `IMediatR` 구현의 확장 라이브러리 입니다.
-[Akka.NET](https://getakka.net/) 또는 [Orleans](https://github.com/dotnet/orleans) 과 같은 분산 클러스터링 프레임워크에서 메시지를 통한 분산 환경에서 영감을 받았습니다.
+[Akka.NET](https://getakka.net/) 또는 [Orleans](https://github.com/dotnet/orleans) 과 같은 분산 클러스터링 프레임워크에서 메시지를 통한 분산 방법에서 영감을 받았습니다.
 
-최근 소프트웨어 개발은 작은 규모로 시작하지만 점점 더 복잡해지고 빠른 속도로 확장해야 해야 합니다. 
+최근 소프트웨어 개발은 작은 규모로 시작하지만 점점 더 복잡해지고 빠른 속도로 확장해야 합니다. 
 그러나 규모의 확장을 항상 염두하고 개발하지만 떄론 기존 아키텍처가 새로운 아키텍처 설계에 장애물이 되기도 합니다.
 `MediatR.Remote` 는 `IMediator` 의 Mediator Pattern 을 원격/분산하도록 고안된 라이브러리 입니다.
 
@@ -73,6 +73,26 @@ app.UseRouting();      // <-- Routing 미들웨어가 필수로 필요함
 app.UseMediatRemote();
 ```
 
-### 4. 예제
+### 4. 메시지 전송
+
+```csharp
+class Test
+{
+    private IRemoteMediator mediator; // or private IMediator mediator;
+
+    public Test(IRemoteMediator mediator)
+    {
+        _mediator = mediator;
+    }
+    
+    public async Task Call()
+    {
+        var request = new HelloRemoteRequest("HELLO WORLD");
+        var response = await _mediator.Send(request);
+    }
+}
+```
+
+## 더 많은 예제
 
 * [HTTP 메시지 통신 예제](examples/http)
