@@ -66,7 +66,6 @@ public static class ApplicationBuilderExtensions
                 break;
 
             case IRemoteStreamRequest:
-                // httpContext.Response.ContentType = "text/event-stream";
                 httpContext.Response.ContentType = MediaTypeNames.Application.Json;
 
                 var streamCommand = new RemoteMediatorStreamCommand(command.Object, command.Spans);
@@ -85,7 +84,7 @@ public static class ApplicationBuilderExtensions
                         await httpContext.Response.WriteAsync(",", Encoding.UTF8);
                     }
 
-                    await httpContext.Response.WriteAsync("" + JsonSerializer.Serialize(item, jsonSerializerOptions),
+                    await httpContext.Response.WriteAsync(JsonSerializer.Serialize(item, jsonSerializerOptions),
                         Encoding.UTF8);
                     await httpContext.Response.Body.FlushAsync();
 
