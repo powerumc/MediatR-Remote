@@ -21,7 +21,7 @@ dotnet add package MediatR.Remote
 
 ## Getting Started
 
-1. **Message Definition**
+### 1. Message Definition
 
 Implement the `IRemoteRequest` interface in your message class.
 or `IRemoteNotification`, which requires an implementation of the `IRemoteStreamRequest` interface.
@@ -50,11 +50,11 @@ public class HelloResponse
 }
 ```
 
-2. **Configuring Services**
+### 2. Configuring Services
 
 Define the role of the currently running service through the `AddRemoteMediatR()` method.
 
-If you want to run all roles in one service in one In-Process, `builder.Services.AddRemoteMediatR(new[] {"public-api", "internal-api1", "internal-api2"}, ...`) ; You can define the role of the service like this:
+If you want to run all roles in one service in one In-Process, `builder.Services.AddRemoteMediatR(new[] {"public-api", "internal-api1", "internal-api2"}, ...);` You can define the role of the service like this:
 
 ```csharp
 builder.Services.AddMediatR(/* ..omitted.. */);
@@ -66,13 +66,13 @@ builder.Services.AddRemoteMediatR("public-api", remoteBuilder =>
 });
 ```
 
-3. **Applying Middleware**
+### 3. Applying Middleware
 
 ```csharp
 app.UseRouting(); // <-- Routing middleware is required
 app.UseMediatRemote();
 ```
 
-## Examples
+### 4. Examples
 
 * [HTTP Message Communication Example](examples/http)
