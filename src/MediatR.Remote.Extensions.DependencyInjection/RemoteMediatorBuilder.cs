@@ -1,5 +1,4 @@
 using System.Text.Json;
-using MediatR.Remote.RemoteStrategies;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MediatR.Remote.Extensions.DependencyInjection;
@@ -52,18 +51,5 @@ public class RemoteMediatorBuilder
             strategyTypes.NotificationStrategyType, strategyTypes.NotificationStrategyType, serviceLifetime));
         Services.TryAdd(ServiceDescriptor.Describe(
             strategyTypes.StreamStrategyType, strategyTypes.StreamStrategyType, serviceLifetime));
-    }
-}
-
-public static class RemoteMediatorBuilderExtensions
-{
-    public static RemoteMediatorBuilder AddHttpStrategy(this RemoteMediatorBuilder builder, string name,
-        Action<HttpClient> configureClient, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-    {
-        builder.Add<RemoteHttpStrategy, RemoteHttpStrategy, RemoteHttpStrategy>(name, serviceLifetime);
-
-        builder.Services.AddHttpClient(name, configureClient);
-
-        return builder;
     }
 }
