@@ -33,20 +33,20 @@ public class RemoteHttpStrategy : IRemoteStrategy
         var json = JsonSerializer.Serialize(newCommand, options.JsonSerializerOptions);
         var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        if (command.Object is IRemoteRequest)
+        switch (command.Object)
         {
-            var result = await SendInternalAsync(httpClient, stringContent, options, cancellationToken);
-            return result;
-        }
+            case IRemoteRequest:
+                var result = await SendInternalAsync(httpClient, stringContent, options, cancellationToken);
+                return result;
 
-        if (command.Object is IRemoteNotification)
-        {
-            await NotificationInternalAsync(httpClient, stringContent, options, cancellationToken);
-            return null;
-        }
+            case IRemoteNotification:
+                await NotificationInternalAsync(httpClient, stringContent, options, cancellationToken);
+                return null;
 
-        throw new InvalidOperationException(
-            $"MediatorRemote does only supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}");
+            default:
+                throw new InvalidOperationException(
+                    $"MediatorRemote does only supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}");
+        }
     }
 
     public async IAsyncEnumerable<RemoteMediatorStreamResult?> InvokeStreamAsync(IEnumerable<string> myRoleNames,

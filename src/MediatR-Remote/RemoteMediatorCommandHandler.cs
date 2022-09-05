@@ -4,7 +4,8 @@ using Microsoft.Extensions.Options;
 
 namespace MediatR.Remote;
 
-internal class RemoteMediatorCommandHandler : IRequestHandler<RemoteMediatorCommand, RemoteMediatorResult?>,
+internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
+    IRequestHandler<RemoteMediatorCommand, RemoteMediatorResult?>,
     INotificationHandler<RemoteMediatorCommand>
 {
     private readonly ILogger<RemoteMediatorCommandHandler> _logger;
@@ -40,53 +41,52 @@ internal class RemoteMediatorCommandHandler : IRequestHandler<RemoteMediatorComm
         _ = request ?? throw new ArgumentNullException(nameof(request));
         _ = request.Object ?? throw new NullReferenceException(nameof(request.Object));
 
-        if (request.Object is IRemoteCommand remoteCommand)
+        if (request.Object is not IRemoteCommand remoteCommand)
         {
-            var options = _remoteMediatorOptions.CurrentValue;
-            var roles = remoteCommand.SpanRoles ?? Array.Empty<string>();
-            var spans = request.Spans ?? Enumerable.Empty<string>();
-            var myRoleNames = options.MyRoleNames;
-            var nextSpans = spans.Concat(myRoleNames).ToArray();
-            var excepted = roles.Except(nextSpans);
-
-            var targetRoleName = excepted.FirstOrDefault();
-            if (targetRoleName != null)
-            {
-                using var _ = _logger.BeginScope(nameof(RemoteMediatorCommandHandler));
-                _logger.LogBeginHandler(myRoleNames, targetRoleName, request.Object.GetType().Name);
-
-                if (options.RemoteStrategies.TryGetValue(targetRoleName, out var remoteStrategyType))
-                {
-                    var serviceProvider = _serviceScopeFactory.CreateScope().ServiceProvider;
-                    var command = new RemoteMediatorCommand(request.Object, nextSpans);
-                    var remoteResult = await InvokeRemoteAsync(serviceProvider, myRoleNames, targetRoleName, nextSpans,
-                        command, remoteStrategyType, cancellationToken);
-
-                    return remoteResult;
-                }
-
-                throw new InvalidOperationException($"'{targetRoleName}' is not contains the remote strategies.");
-            }
+            return await _mediatorInvoker.InvokeAsync(request, cancellationToken);
         }
 
-        return await _mediatorInvoker.InvokeAsync(request, cancellationToken);
+        var options = _remoteMediatorOptions.CurrentValue;
+        var myRoleNames = options.MyRoleNames;
+        var requestSpans = request.Spans;
+        var (nextSpans, targetRoleName) = GetNextSpans(remoteCommand, requestSpans, myRoleNames);
+
+        if (targetRoleName is null)
+        {
+            return await _mediatorInvoker.InvokeAsync(request, cancellationToken);
+        }
+
+        using var disposable = _logger.BeginScope(nameof(RemoteMediatorCommandHandler));
+        _logger.LogBeginHandler(myRoleNames, targetRoleName, request.Object.GetType().Name);
+
+        if (!options.RemoteStrategies.TryGetValue(targetRoleName, out var remoteStrategyType))
+        {
+            throw new InvalidOperationException($"'{targetRoleName}' is not contains the remote strategies.");
+        }
+
+        var serviceProvider = _serviceScopeFactory.CreateScope().ServiceProvider;
+        var command = new RemoteMediatorCommand(request.Object, nextSpans);
+        var remoteResult = await InvokeRemoteAsync(serviceProvider, myRoleNames, targetRoleName, nextSpans,
+            command, remoteStrategyType, cancellationToken);
+
+        return remoteResult;
     }
 
     private Task<RemoteMediatorResult?> InvokeRemoteAsync(IServiceProvider serviceProvider,
         IEnumerable<string> myRoleNames, string targetRoleName, IEnumerable<string> nextSpans,
-        RemoteMediatorCommand command, StrategyItem strategyItem, CancellationToken cancellationToken)
+        RemoteMediatorCommand command, StrategyTypes strategyTypes, CancellationToken cancellationToken)
     {
         IRemoteStrategy remoteStrategy;
 
         switch (command.Object)
         {
             case IRemoteRequest:
-                remoteStrategy = (IRemoteStrategy)serviceProvider.GetRequiredService(strategyItem.RequestStrategyType);
+                remoteStrategy = (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.RequestStrategyType);
                 break;
 
             case IRemoteNotification:
                 remoteStrategy =
-                    (IRemoteStrategy)serviceProvider.GetRequiredService(strategyItem.NotificationStrategyType);
+                    (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.NotificationStrategyType);
                 break;
 
             default:
