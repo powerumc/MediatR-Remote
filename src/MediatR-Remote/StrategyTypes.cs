@@ -1,19 +1,19 @@
 namespace MediatR.Remote;
 
-public class StrategyItem
+public class StrategyTypes
 {
-    public StrategyItem(Type requestStrategyType)
+    public StrategyTypes(Type requestStrategyType)
     {
         RequestStrategyType = NotificationStrategyType = StreamStrategyType = requestStrategyType;
     }
 
-    public StrategyItem(Type requestStrategyType, Type notificationStrategyType)
+    public StrategyTypes(Type requestStrategyType, Type notificationStrategyType)
     {
         RequestStrategyType = StreamStrategyType = requestStrategyType;
         NotificationStrategyType = notificationStrategyType;
     }
 
-    public StrategyItem(Type requestStrategyType, Type notificationStrategyType, Type streamStrategyType)
+    public StrategyTypes(Type requestStrategyType, Type notificationStrategyType, Type streamStrategyType)
     {
         RequestStrategyType = requestStrategyType;
         NotificationStrategyType = notificationStrategyType;

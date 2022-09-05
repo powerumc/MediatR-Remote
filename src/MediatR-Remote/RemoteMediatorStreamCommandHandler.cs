@@ -63,9 +63,9 @@ internal class RemoteMediatorStreamCommandHandler :
 
     private IAsyncEnumerable<RemoteMediatorStreamResult?> InvokeRemoteStreamAsync(IServiceProvider serviceProvider,
         IEnumerable<string> myRoleNames, string targetRoleName, IEnumerable<string> nextSpans,
-        RemoteMediatorStreamCommand command, StrategyItem strategyItem, CancellationToken cancellationToken)
+        RemoteMediatorStreamCommand command, StrategyTypes strategyTypes, CancellationToken cancellationToken)
     {
-        var remoteStrategy = (IRemoteStrategy)serviceProvider.GetRequiredService(strategyItem.StreamStrategyType);
+        var remoteStrategy = (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.StreamStrategyType);
 
         return remoteStrategy.InvokeStreamAsync(myRoleNames, targetRoleName, nextSpans, command, cancellationToken);
     }

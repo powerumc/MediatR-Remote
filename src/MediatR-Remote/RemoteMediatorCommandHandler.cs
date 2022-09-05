@@ -74,19 +74,19 @@ internal class RemoteMediatorCommandHandler : IRequestHandler<RemoteMediatorComm
 
     private Task<RemoteMediatorResult?> InvokeRemoteAsync(IServiceProvider serviceProvider,
         IEnumerable<string> myRoleNames, string targetRoleName, IEnumerable<string> nextSpans,
-        RemoteMediatorCommand command, StrategyItem strategyItem, CancellationToken cancellationToken)
+        RemoteMediatorCommand command, StrategyTypes strategyTypes, CancellationToken cancellationToken)
     {
         IRemoteStrategy remoteStrategy;
 
         switch (command.Object)
         {
             case IRemoteRequest:
-                remoteStrategy = (IRemoteStrategy)serviceProvider.GetRequiredService(strategyItem.RequestStrategyType);
+                remoteStrategy = (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.RequestStrategyType);
                 break;
 
             case IRemoteNotification:
                 remoteStrategy =
-                    (IRemoteStrategy)serviceProvider.GetRequiredService(strategyItem.NotificationStrategyType);
+                    (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.NotificationStrategyType);
                 break;
 
             default:
