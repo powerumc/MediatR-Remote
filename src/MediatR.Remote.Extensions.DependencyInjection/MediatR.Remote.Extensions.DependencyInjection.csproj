@@ -7,6 +7,12 @@
     <OutputType>Library</OutputType>
     <LangVersion>default</LangVersion>
     <IsPackable>true</IsPackable>
+    <Authors>Junil Um</Authors>
+    <Description>The MediatR.Remote library is an extension library of the IMediator implementation that distributes and relays remote objects.</Description>
+    <PackageProjectUrl>https://github.com/powerumc/MediatR-Remote</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/powerumc/MediatR-Remote/blob/main/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/powerumc/MediatR-Remote</RepositoryUrl>
+    <PackageTags>mediator,mediatr,mediator-pattern,mediatr-library,mediatr-extension</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
