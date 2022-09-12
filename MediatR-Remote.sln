@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A2ADD142-9341-4641-927E-19F68CD1F73B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediatR.Remote", "src\MediatR-Remote\MediatR.Remote.csproj", "{3910112E-F083-49FD-B5DD-6E262F12EDE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediatR.Remote", "src\MediatR.Remote\MediatR.Remote.csproj", "{3910112E-F083-49FD-B5DD-6E262F12EDE5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediatR.Remote.Extensions.DependencyInjection", "src\MediatR.Remote.Extensions.DependencyInjection\MediatR.Remote.Extensions.DependencyInjection.csproj", "{930C85B4-F08B-4E0B-9664-733757617FE2}"
 EndProject
