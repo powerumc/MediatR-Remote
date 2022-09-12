@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\MediatR-Remote\MediatR.Remote.csproj" />
+      <ProjectReference Include="..\..\..\src\MediatR.Remote\MediatR.Remote.csproj" />
     </ItemGroup>
 
 </Project>
