@@ -1,0 +1,27 @@
+name: main
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: | 
+          6.0.x
+    - run: |
+        dotnet pack src/MediatR.Remote
+        dotnet pack src/MediatR.Remote.Extensions.DependencyInjection
+    - name: Publish the package to nuget.org
+      run: dotnet nuget push src/*/bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json -c Release
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
