@@ -11,9 +11,9 @@ public static class RemoteMediatorApplicationBuilderExtensions
     {
         var remoteMediatorOptions = builder.ApplicationBuilder.ApplicationServices.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
 
-        builder.ApplicationBuilder.UseEndpoints(builder =>
+        builder.ApplicationBuilder.UseEndpoints(endpointRouteBuilder =>
         {
-            builder.MapPost(remoteMediatorOptions.MediatorRemoteEndpoint,
+            endpointRouteBuilder.MapPost(remoteMediatorOptions.MediatorRemoteEndpoint,
                 ([FromServices] MediatorRemoteEndpoint endpoint,
                     HttpContext httpContext,
                     JsonObject jsonObject) => endpoint.InvokeAsync(httpContext, jsonObject));
