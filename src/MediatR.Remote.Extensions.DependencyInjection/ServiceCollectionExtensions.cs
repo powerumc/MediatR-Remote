@@ -6,13 +6,13 @@ namespace MediatR.Remote.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddRemoteMediatR(this IServiceCollection services, string myRoleName,
-        Action<RemoteMediatorBuilder> configure)
+        Action<RemoteMediatorBuilder>? configure = null)
     {
         return AddRemoteMediatR(services, new[] { myRoleName }, configure);
     }
 
     public static IServiceCollection AddRemoteMediatR(this IServiceCollection services, IEnumerable<string> myRoleNames,
-        Action<RemoteMediatorBuilder> configure)
+        Action<RemoteMediatorBuilder>? configure = null)
     {
         var builder = new RemoteMediatorBuilder(services);
         configure?.Invoke(builder);
