@@ -9,7 +9,8 @@ public static class RemoteMediatorApplicationBuilderExtensions
 {
     public static RemoteMediatorApplicationBuilder UseHttpListener(this RemoteMediatorApplicationBuilder builder)
     {
-        var remoteMediatorOptions = builder.ApplicationBuilder.ApplicationServices.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
+        var serviceProvider = builder.ApplicationBuilder.ApplicationServices;
+        var remoteMediatorOptions = serviceProvider.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
 
         builder.ApplicationBuilder.UseEndpoints(endpointRouteBuilder =>
         {
