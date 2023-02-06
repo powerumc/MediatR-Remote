@@ -15,7 +15,7 @@ public class RemoteMediatorBuilder
         Services = services;
     }
 
-    internal string MediatorRemoteEndpoint => "/mediator-remote";
+    internal string MediatorRemoteEndpoint => "mediator-remote";
 
     public RemoteMediatorBuilder OverrideJsonSerializerOptions(Action<JsonSerializerOptions> options)
     {
