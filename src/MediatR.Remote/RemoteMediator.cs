@@ -25,6 +25,18 @@ internal class RemoteMediator : IRemoteMediator
         return await _mediator.Send(request, cancellationToken);
     }
 
+    public async Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = new()) where TRequest : IRequest
+    {
+        _ = request ?? throw new ArgumentNullException(nameof(request));
+
+        if (request is IRemoteRequest)
+        {
+            await _mediator.Send(new RemoteMediatorCommand(request), cancellationToken);
+        }
+
+        await _mediator.Send(request, cancellationToken);
+    }
+
     public async Task<object?> Send(object request, CancellationToken cancellationToken = new())
     {
         _ = request ?? throw new ArgumentNullException(nameof(request));
