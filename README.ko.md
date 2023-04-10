@@ -17,6 +17,9 @@ MediatR.Remote 라이브러리는 원격 개체를 분산하여 중계하는 `IM
 
 ```bash
 dotnet add package MediatR.Remote
+
+# ASP.NET Core
+dotnet add package MediatR.Remote.Extensions.DependencyInjection
 ```
 
 ## 시작하기
