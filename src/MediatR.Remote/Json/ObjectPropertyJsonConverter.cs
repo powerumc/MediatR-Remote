@@ -27,8 +27,10 @@ internal class ObjectPropertyJsonConverter : JsonConverter<object>
     {
         var jsonElement = JsonSerializer.SerializeToElement(value, options);
         var jsonObject = JsonObject.Create(jsonElement);
-        
-        jsonObject?.Add(TypePropertyName, value.GetType().AssemblyQualifiedName);
+
+        var type = value.GetType();
+        var typeFullname = $"{type.FullName}, {type.Assembly.GetName().Name}";
+        jsonObject?.Add(TypePropertyName, typeFullname);
         jsonObject?.WriteTo(writer, options);
     }
 }
