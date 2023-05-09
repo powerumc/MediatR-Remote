@@ -17,6 +17,9 @@ The focus is on shrinking or expanding the structure.
 
 ```bash
 dotnet add package MediatR.Remote
+
+# ASP.NET Core
+dotnet add package MediatR.Remote.Extensions.DependencyInjection
 ```
 
 ## Getting Started
