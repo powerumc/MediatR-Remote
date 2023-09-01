@@ -24,6 +24,21 @@ dotnet add package MediatR.Remote.Extensions.DependencyInjection
 
 ## Getting Started
 
+```mermaid
+flowchart LR
+    subgraph Public API
+        A[IRemoteRequest Instance]
+    end
+    subgraph Internal API 1
+        A -- HTTP Request --> B[IRemoteRequest Instance]
+    end
+    subgraph Internal API 2
+        B -- HTTP Request --> C[IRemoteRequest Instance]
+        C -- InProcess --> D[Handler]
+    end
+  
+```
+
 ### 1. Message Definition
 
 Implement the `IRemoteRequest` interface in your message class.
