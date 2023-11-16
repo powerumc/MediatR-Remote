@@ -73,11 +73,11 @@ builder.Services.AddRemoteMediatR("public-api", remoteBuilder =>
 
 ```csharp
 // Map endpoint style of .NET 6 or higher.
-app.UseMediatRemote(mediatorApplicationBuilder => mediatorApplicationBuilder.UseHttpListener());
+app.UseRemoteMediatR(mediatorApplicationBuilder => mediatorApplicationBuilder.UseHttpListener());
 
 // Middlewre style of .NET 5 or older.
 app.UseRouting(); // <-- Routing middleware is required
-app.UseMediatRemote(mediatorApplicationBuilder => mediatorApplicationBuilder.UseHttpListener());
+app.UseRemoteMediatR(mediatorApplicationBuilder => mediatorApplicationBuilder.UseHttpListener());
 ```
 
 ### 4. Send Message
