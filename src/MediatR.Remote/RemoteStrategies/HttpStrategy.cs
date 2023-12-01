@@ -85,7 +85,7 @@ public class RemoteHttpStrategy : IRemoteStrategy
     }
 
     private static async Task<RemoteMediatorResult?> SendInternalAsync(HttpClient httpClient,
-        StringContent stringContent, RemoteMediatorOptions options, CancellationToken cancellationToken)
+        HttpContent stringContent, RemoteMediatorOptions options, CancellationToken cancellationToken)
     {
         var response = await httpClient.PostAsync(options.MediatorRemoteEndpoint, stringContent, cancellationToken);
         response.EnsureSuccessStatusCode();
