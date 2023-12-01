@@ -3,6 +3,9 @@ using MediatR.Remote.Json;
 
 namespace MediatR.Remote;
 
+/// <summary>
+/// A protocol for sending a request to a remote mediator.
+/// </summary>
 public class RemoteMediatorCommand : IRequest<RemoteMediatorResult>, INotification
 {
     [JsonConstructor]
@@ -13,12 +16,21 @@ public class RemoteMediatorCommand : IRequest<RemoteMediatorResult>, INotificati
     }
 
 
+    /// <summary>
+    /// <see cref="IMediator"/> command object
+    /// </summary>
     [JsonConverter(typeof(ObjectPropertyJsonConverter))]
     public object? Object { get; }
 
+    /// <summary>
+    /// A list of roles to be included in the response.
+    /// </summary>
     public IEnumerable<string>? Spans { get; }
 }
 
+/// <summary>
+/// A protocol for sending a response from a remote mediator.
+/// </summary>
 public class RemoteMediatorResult
 {
     [JsonConstructor]
@@ -27,6 +39,9 @@ public class RemoteMediatorResult
         Object = @object;
     }
 
+    /// <summary>
+    /// <see cref="IMediator"/> command result object
+    /// </summary>
     [JsonConverter(typeof(ObjectPropertyJsonConverter))]
     public object? Object { get; }
 }

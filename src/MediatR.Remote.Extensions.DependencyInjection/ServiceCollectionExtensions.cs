@@ -3,14 +3,30 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MediatR.Remote.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for setting up mediator remote services in an <see cref="IServiceCollection" />.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Add mediator remote services.
+    /// </summary>
+    /// <param name="services">Service collection</param>
+    /// <param name="myRoleName">My role name</param>
+    /// <param name="configure">Configure <see cref="RemoteMediatorBuilder"/></param>
+    /// <returns></returns>
     public static IServiceCollection AddRemoteMediatR(this IServiceCollection services, string myRoleName,
         Action<RemoteMediatorBuilder>? configure = null)
     {
         return AddRemoteMediatR(services, new[] { myRoleName }, configure);
     }
 
+    /// <summary>
+    /// Add mediator remote services.
+    /// </summary>
+    /// <param name="services">Service collection</param>
+    /// <param name="myRoleNames">My role name</param>
+    /// <param name="configure">Configure <see cref="RemoteMediatorBuilder"/></param>
     public static IServiceCollection AddRemoteMediatR(this IServiceCollection services, IEnumerable<string> myRoleNames,
         Action<RemoteMediatorBuilder>? configure = null)
     {

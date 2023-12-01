@@ -15,6 +15,9 @@ public class RemoteMediatorBuilder
         Services = services;
     }
 
+    /// <summary>
+    /// Default HTTP endpoint
+    /// </summary>
     internal string MediatorRemoteEndpoint => "mediator-remote";
 
     public RemoteMediatorBuilder OverrideJsonSerializerOptions(Action<JsonSerializerOptions> options)
@@ -24,6 +27,15 @@ public class RemoteMediatorBuilder
         return this;
     }
 
+    /// <summary>
+    /// Add a strategy with the specified name.
+    /// </summary>
+    /// <param name="name">Role name</param>
+    /// <param name="serviceLifetime">Service lifetime</param>
+    /// <typeparam name="TRequestStrategy">Request object strategy</typeparam>
+    /// <typeparam name="TNotificationStrategy">Notification object strategy</typeparam>
+    /// <typeparam name="TStreamStrategy">Stream object strategy</typeparam>
+    /// <returns></returns>
     public RemoteMediatorBuilder Add<TRequestStrategy, TNotificationStrategy, TStreamStrategy>(string name,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TRequestStrategy : IRemoteStrategy

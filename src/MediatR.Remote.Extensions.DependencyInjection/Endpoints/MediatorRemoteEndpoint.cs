@@ -6,6 +6,9 @@ using Microsoft.Extensions.Options;
 
 namespace MediatR.Remote.Extensions.DependencyInjection.Endpoints;
 
+/// <summary>
+/// Invokes the Mediator to handle the <see cref="RemoteMediatorCommand" /> and <see cref="RemoteMediatorStreamCommand" />
+/// </summary>
 internal class MediatorRemoteEndpoint
 {
     private readonly ILogger<MediatorRemoteEndpoint> _logger;
@@ -21,6 +24,12 @@ internal class MediatorRemoteEndpoint
         _logger = logger;
     }
 
+    /// <summary>
+    /// Invokes the Mediator to handle the <see cref="IRemoteCommand" />
+    /// </summary>
+    /// <param name="httpContext"><see cref="HttpContext"/> object</param>
+    /// <param name="jsonObject">Received json</param>
+    /// <exception cref="InvalidOperationException">If <paramref name="jsonObject"/> is null</exception>
     public async Task InvokeAsync(HttpContext httpContext, JsonObject jsonObject)
     {
         var options = _remoteMediatorOptions.CurrentValue;
