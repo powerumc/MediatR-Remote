@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+
+package MediatR.Remote.Grpc;
+
+service MediatorGrpc {
+  rpc GrpcCommandService (GrpcCommandRequest) returns (GrpcCommandResult);
+  rpc GrpcNotificationService (GrpcNotificationRequest) returns (google.protobuf.Empty);
+  rpc GrpcStreamService (GrpcCommandRequest) returns (stream GrpcCommandResult);
+}
+
+message GrpcCommandRequest {
+  string Type = 1;
+  string object = 2;
+}
+
+message GrpcCommandResult {
+  string Type = 1;
+  string object = 2;
+}
+
+message GrpcNotificationRequest {
+  string Type = 1;
+  string object = 2;
+}
