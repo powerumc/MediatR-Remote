@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace MediatR.Remote;
 
 /// <summary>
-/// A mediator command handler implementation that can handle remote requests.
+///     A mediator command handler implementation that can handle remote requests.
 /// </summary>
 internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
     IRequestHandler<RemoteMediatorCommand, RemoteMediatorResult?>,
@@ -16,7 +16,8 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
     private readonly IOptionsMonitor<RemoteMediatorOptions> _remoteMediatorOptions;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public RemoteMediatorCommandHandler(IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions,
+    public RemoteMediatorCommandHandler(
+        IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions,
         IServiceScopeFactory serviceScopeFactory,
         IMediatorInvoker mediatorInvoker,
         ILogger<RemoteMediatorCommandHandler> logger)
@@ -42,7 +43,7 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
         CancellationToken cancellationToken)
     {
         _ = request ?? throw new ArgumentNullException(nameof(request));
-        _ = request.Object ?? throw new NullReferenceException(nameof(request.Object));
+        _ = request.Object ?? throw new ArgumentException(nameof(request.Object));
 
         if (request.Object is not IRemoteCommand remoteCommand)
         {
@@ -75,14 +76,19 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
         return remoteResult;
     }
 
-    private static Task<RemoteMediatorResult?> InvokeRemoteAsync(IServiceProvider serviceProvider,
-        IEnumerable<string> myRoleNames, string targetRoleName, IEnumerable<string> nextSpans,
-        RemoteMediatorCommand command, StrategyTypes strategyTypes, CancellationToken cancellationToken)
+    private static Task<RemoteMediatorResult?> InvokeRemoteAsync(
+        IServiceProvider serviceProvider,
+        IEnumerable<string> myRoleNames,
+        string targetRoleName,
+        IEnumerable<string> nextSpans,
+        RemoteMediatorCommand command,
+        StrategyTypes strategyTypes,
+        CancellationToken cancellationToken)
     {
         var remoteStrategy = command.Object switch
         {
             IRemoteRequest => (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.RequestStrategyType),
-            IRemoteNotification => 
+            IRemoteNotification =>
                 (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.NotificationStrategyType),
             _ => throw new InvalidOperationException(
                 $"MediatorRemote is supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}")

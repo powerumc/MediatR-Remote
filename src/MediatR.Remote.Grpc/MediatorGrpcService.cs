@@ -9,20 +9,13 @@ using MediatR.Remote.Extensions.DependencyInjection.Endpoints;
 
 namespace MediatR.Remote.Grpc;
 
-public class MediatorGrpcService : MediatorGrpc.MediatorGrpcBase
+public class MediatorGrpcService(MediatorRemoteEndpoint endpoint) : MediatorGrpc.MediatorGrpcBase
 {
-    private readonly MediatorRemoteEndpoint _endpoint;
-
-    public MediatorGrpcService(MediatorRemoteEndpoint endpoint)
-    {
-        _endpoint = endpoint;
-    }
-
     public override async Task<GrpcCommandResult> GrpcCommandService(GrpcCommandRequest request,
         ServerCallContext context)
     {
         var command = JsonSerializer.Deserialize<RemoteMediatorCommand>(request.Object)!;
-        var result = await _endpoint.InvokeAsync(command);
+        var result = await endpoint.InvokeAsync(command, context.CancellationToken);
 
         return new GrpcCommandResult { Type = request.Type, Object = JsonSerializer.Serialize(result) };
     }
@@ -31,7 +24,7 @@ public class MediatorGrpcService : MediatorGrpc.MediatorGrpcBase
         ServerCallContext context)
     {
         var command = JsonSerializer.Deserialize<RemoteMediatorCommand>(request.Object)!;
-        await _endpoint.InvokeAsync(command);
+        await endpoint.InvokeAsync(command, context.CancellationToken);
         return new Empty();
     }
 
