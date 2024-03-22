@@ -45,7 +45,8 @@ public static class RemoteMediatorApplicationBuilderExtensions
     public static RouteHandlerBuilder MapHttpListener(this RemoteMediatorEndpointRouteBuilder builder)
     {
         var routeBuilder = builder.EndpointRouteBuilder;
-        var options = routeBuilder.ServiceProvider.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
+        var options = routeBuilder.ServiceProvider.GetRequiredService<IOptionsSnapshot<RemoteMediatorOptions>>()
+            .Get("http");
         return routeBuilder.MapPost(options.MediatorRemoteEndpoint, async (
             [FromServices] MediatorRemoteEndpoint endpoint,
             JsonObject jsonObject,

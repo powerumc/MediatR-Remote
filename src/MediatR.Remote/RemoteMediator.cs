@@ -5,7 +5,7 @@ namespace MediatR.Remote;
 /// <summary>
 ///     A mediator implementation that can handle remote requests.
 /// </summary>
-internal class RemoteMediator(IMediator mediator) : IRemoteMediator
+public class RemoteMediator(IMediator mediator) : IRemoteMediator
 {
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request,
         CancellationToken cancellationToken = new())
