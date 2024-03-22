@@ -6,11 +6,11 @@ namespace PublicApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TestController : ControllerBase
+public class HttpController : ControllerBase
 {
     private readonly IRemoteMediator _remoteMediator;
 
-    public TestController(IRemoteMediator remoteMediator)
+    public HttpController(IRemoteMediator remoteMediator)
     {
         _remoteMediator = remoteMediator;
     }

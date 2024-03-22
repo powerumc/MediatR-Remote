@@ -1,4 +1,3 @@
-using MediatR.Remote;
 using Messages;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,11 +5,11 @@ namespace PublicApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TestController : ControllerBase
+public class GrpcController : ControllerBase
 {
-    private readonly IRemoteMediator _remoteMediator;
+    private readonly IGrpcMediator _remoteMediator;
 
-    public TestController(IRemoteMediator remoteMediator)
+    public GrpcController(IGrpcMediator remoteMediator)
     {
         _remoteMediator = remoteMediator;
     }
