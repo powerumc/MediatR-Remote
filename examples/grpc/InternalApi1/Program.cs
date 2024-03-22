@@ -1,4 +1,5 @@
 using System.Reflection;
+using MediatR.Remote.Extensions.DependencyInjection;
 using MediatR.Remote.Grpc;
 using MediatR.Remote.Grpc.Endpoints;
 using Messages;
@@ -28,6 +29,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseRouting();
-app.UseRemoteGrpcMediatR();
+app.UseRemoteMediatR(applicationBuilder => applicationBuilder.UseRemoteGrpcMediatR());
 
 app.Run();

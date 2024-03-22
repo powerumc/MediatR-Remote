@@ -1,4 +1,5 @@
 using System.Reflection;
+using MediatR.Remote.Extensions.DependencyInjection;
 using MediatR.Remote.Grpc;
 using Messages;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -24,6 +25,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseRouting();
-app.UseRemoteGrpcMediatR();
+app.UseRemoteMediatR(applicationBuilder => applicationBuilder.UseRemoteGrpcMediatR());
 
 app.Run();
