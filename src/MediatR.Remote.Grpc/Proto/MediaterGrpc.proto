@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/any.proto";
 
 package MediatR.Remote.Grpc;
 
@@ -13,15 +14,15 @@ service MediatorGrpc {
 
 message GrpcCommandRequest {
   string Type = 1;
-  string object = 2;
+  string Object = 2;
 }
 
 message GrpcCommandResult {
   string Type = 1;
-  string object = 2;
+  string Object = 2;
 }
 
 message GrpcNotificationRequest {
   string Type = 1;
-  string object = 2;
+  string Object = 2;
 }

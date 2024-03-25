@@ -6,8 +6,8 @@ namespace MediatR.Remote;
 
 public class ProtocolRoleName(string protocolName, string name)
 {
-    public string ProtocolName { get; } = protocolName;
-    public string Name { get; } = name;
+    public string ProtocolName => protocolName;
+    public string Name => name;
 
     public override string ToString()
     {
