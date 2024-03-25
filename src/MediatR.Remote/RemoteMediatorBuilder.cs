@@ -11,10 +11,10 @@ public class ProtocolRoleName(string protocolName, string name)
 
     public override string ToString()
     {
-        return GetNormalizedRoleName(protocolName, name);
+        return Generate(protocolName, name);
     }
 
-    public static string GetNormalizedRoleName(string protocolName, string name)
+    public static string Generate(string protocolName, string name)
     {
         return $"{name}_{protocolName}";
     }

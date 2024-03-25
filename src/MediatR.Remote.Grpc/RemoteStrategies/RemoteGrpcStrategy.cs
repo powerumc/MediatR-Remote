@@ -15,7 +15,7 @@ public class RemoteGrpcStrategy(GrpcClientFactory grpcClientFactory) : RemoteStr
         RemoteMediatorCommand nextCommand,
         CancellationToken cancellationToken)
     {
-        var grpcClientName = ProtocolRoleName.GetNormalizedRoleName(nextCommand.ProtocolName, targetRoleName);
+        var grpcClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
         var client = grpcClientFactory.CreateClient<MediatorGrpc.MediatorGrpcClient>(grpcClientName);
         var payload = new GrpcCommandRequest { Type = "", Object = JsonSerializer.Serialize(nextCommand) };
         var response = await client.GrpcCommandServiceAsync(payload, cancellationToken: cancellationToken);
@@ -28,7 +28,7 @@ public class RemoteGrpcStrategy(GrpcClientFactory grpcClientFactory) : RemoteStr
         RemoteMediatorCommand nextCommand,
         CancellationToken cancellationToken)
     {
-        var grpcClientName = ProtocolRoleName.GetNormalizedRoleName(nextCommand.ProtocolName, targetRoleName);
+        var grpcClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
         var client = grpcClientFactory.CreateClient<MediatorGrpc.MediatorGrpcClient>(grpcClientName);
         var payload = new GrpcNotificationRequest { Type = "", Object = JsonSerializer.Serialize(nextCommand) };
         await client.GrpcNotificationServiceAsync(payload, cancellationToken: cancellationToken);
