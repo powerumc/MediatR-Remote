@@ -15,7 +15,7 @@ services.AddHttpLogging(options => options.LoggingFields = HttpLoggingFields.All
 services.Configure<KestrelServerOptions>(options =>
 {
     options.ListenLocalhost(5000, listenOptions => listenOptions.Protocols = HttpProtocols.Http1);
-    options.ListenLocalhost(5001, listenOptions => listenOptions.Protocols = HttpProtocols.Http1AndHttp2);
+    options.ListenLocalhost(5001, listenOptions => listenOptions.Protocols = HttpProtocols.Http2);
 });
 
 var assemblies = new[] { Assembly.GetExecutingAssembly(), typeof(HelloRemoteRequest).Assembly };

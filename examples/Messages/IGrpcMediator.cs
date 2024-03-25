@@ -11,4 +11,7 @@ public interface IGrpcMediator : IRemoteMediator
 {
 }
 
-public class GrpcMediator(IMediator mediator) : RemoteMediator(mediator), IGrpcMediator;
+public class GrpcMediator(IMediator mediator) : RemoteMediator(mediator), IGrpcMediator
+{
+    public override string ProtocolName => "grpc";
+}
