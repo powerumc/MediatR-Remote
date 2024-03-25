@@ -45,13 +45,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 app.MapControllers();
 
-app.UseRemoteMediatR(routeBuilder =>
-{
-    routeBuilder.MapHttpListener().AllowAnonymous();
-});
-app.UseRemoteMediatR(applicationBuilder =>
-{
-    applicationBuilder.UseGrpcListener();
-});
+app.UseRemoteMediatR(routeBuilder => routeBuilder.MapHttpListener().AllowAnonymous());
+app.UseRemoteMediatR(applicationBuilder => applicationBuilder.UseGrpcListener());
 
 app.Run();
