@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace MediatR.Remote;
 
 /// <summary>
-/// A mediator stream handler implementation that can handle remote requests.
+///     A mediator stream handler implementation that can handle remote requests.
 /// </summary>
 internal class RemoteMediatorStreamCommandHandler : RemoteMediatorCommandHandlerBase,
     IStreamRequestHandler<RemoteMediatorStreamCommand, RemoteMediatorStreamResult?>
@@ -40,6 +40,7 @@ internal class RemoteMediatorStreamCommandHandler : RemoteMediatorCommandHandler
         var options = _remoteMediatorOptions.CurrentValue;
         var myRoleNames = options.MyRoleNames;
         var requestSpans = request.Spans;
+        var protocolName = request.ProtocolName;
         var (nextSpans, targetRoleName) = GetNextSpans(remoteCommand, requestSpans, myRoleNames);
 
         if (targetRoleName == null)
@@ -50,13 +51,14 @@ internal class RemoteMediatorStreamCommandHandler : RemoteMediatorCommandHandler
         using var disposable = _logger.BeginScope(nameof(RemoteMediatorCommandHandler));
         _logger.LogBeginHandler(myRoleNames, targetRoleName, request.Object.GetType().Name);
 
-        if (!options.RemoteStrategies.TryGetValue(targetRoleName, out var remoteStrategyType))
+        var roleName = new ProtocolRoleName(protocolName, targetRoleName);
+        if (!options.RemoteStrategies.TryGetValue(roleName, out var remoteStrategyType))
         {
             throw new InvalidOperationException($"'{targetRoleName}' is not contains the remote strategies.");
         }
 
         var serviceProvider = _serviceScopeFactory.CreateScope().ServiceProvider;
-        var command = new RemoteMediatorStreamCommand(request.Object, nextSpans);
+        var command = new RemoteMediatorStreamCommand(request.Object, request.ProtocolName, nextSpans);
         var remoteResult = InvokeRemoteStreamAsync(serviceProvider, myRoleNames, targetRoleName, nextSpans,
             command, remoteStrategyType, cancellationToken);
 
