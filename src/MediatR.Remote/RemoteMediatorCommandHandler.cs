@@ -82,7 +82,7 @@ internal class RemoteMediatorCommandHandler(
             IRemoteNotification =>
                 (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.NotificationStrategyType),
             _ => throw new InvalidOperationException(
-                $"MediatorRemote is supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}")
+                $"Type '{command.Object?.GetType()}' is supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}")
         };
 
         return remoteStrategy.InvokeAsync(myRoleNames, targetRoleName, nextSpans, command, cancellationToken);

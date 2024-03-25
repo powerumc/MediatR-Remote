@@ -20,8 +20,7 @@ public class RemoteHttpStrategy(
     protected override async Task<RemoteMediatorResult?> SendInternalAsync(string targetRoleName,
         RemoteMediatorCommand nextCommand, CancellationToken cancellationToken)
     {
-        var httpClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
-        var httpClient = httpClientFactory.CreateClient(httpClientName);
+        var httpClient = CreateHttpClient(targetRoleName, nextCommand);
         var options = remoteMediatorOptions.Get(nextCommand.ProtocolName);
         var json = JsonSerializer.Serialize(nextCommand, options.JsonSerializerOptions);
         var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
@@ -38,8 +37,7 @@ public class RemoteHttpStrategy(
     protected override async Task NotificationInternalAsync(string targetRoleName,
         RemoteMediatorCommand nextCommand, CancellationToken cancellationToken)
     {
-        var httpClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
-        var httpClient = httpClientFactory.CreateClient(httpClientName);
+        var httpClient = CreateHttpClient(targetRoleName, nextCommand);
         var options = remoteMediatorOptions.Get(nextCommand.ProtocolName);
         var json = JsonSerializer.Serialize(nextCommand, options.JsonSerializerOptions);
         var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
@@ -52,29 +50,30 @@ public class RemoteHttpStrategy(
         RemoteMediatorCommand nextCommand,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var httpClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
-        var httpClient = httpClientFactory.CreateClient(httpClientName);
+        var httpClient = CreateHttpClient(targetRoleName, nextCommand);
         var options = remoteMediatorOptions.Get(nextCommand.ProtocolName);
         var json = JsonSerializer.Serialize(nextCommand, options.JsonSerializerOptions);
-        var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, options.MediatorStreamRemoteEndpoint);
-        httpRequestMessage.Content = stringContent;
+        httpRequestMessage.Content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        // var response =
-        //     await httpClient.PostAsync(options.MediatorStreamRemoteEndpoint, stringContent, cancellationToken);
-        // response.EnsureSuccessStatusCode();
         var response = await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead,
             cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var stream = await response.Content.ReadAsStreamAsync();
-        var newOptions = new JsonSerializerOptions(options.JsonSerializerOptions) { DefaultBufferSize = 1 };
         var results = JsonSerializer.DeserializeAsyncEnumerable<RemoteMediatorStreamResult>(stream,
-            newOptions, cancellationToken);
+            options.JsonSerializerOptions, cancellationToken);
 
         await foreach (var result in results)
         {
             yield return result;
         }
+    }
+
+    private HttpClient CreateHttpClient(string targetRoleName, RemoteMediatorCommand nextCommand)
+    {
+        var httpClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
+        var httpClient = httpClientFactory.CreateClient(httpClientName);
+        return httpClient;
     }
 }
