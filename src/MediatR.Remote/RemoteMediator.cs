@@ -57,7 +57,7 @@ public class RemoteMediator(IMediator mediator) : IRemoteMediator
         if (request is IRemoteStreamRequest)
         {
             var command = new RemoteMediatorStreamCommand(request, ProtocolName);
-            var stream = mediator.CreateStream(command, cancellationToken).WithCancellation(cancellationToken);
+            var stream = mediator.CreateStream(command, cancellationToken);
 
             await foreach (var item in stream)
             {

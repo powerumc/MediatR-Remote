@@ -24,7 +24,7 @@ internal class MediatorInvoker(IMediator mediator) : IMediatorInvoker
         CancellationToken cancellationToken = default)
     {
         _ = command ?? throw new ArgumentNullException(nameof(command));
-        _ = command.Object ?? throw new NullReferenceException(nameof(command.Object));
+        _ = command.Object ?? throw new ArgumentException(nameof(command.Object));
 
         switch (command.Object)
         {
@@ -55,9 +55,9 @@ internal class MediatorInvoker(IMediator mediator) : IMediatorInvoker
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         _ = command ?? throw new ArgumentNullException(nameof(command));
-        _ = command.Object ?? throw new NullReferenceException(nameof(command.Object));
+        _ = command.Object ?? throw new ArgumentException(nameof(command.Object));
 
-        var stream = mediator.CreateStream(command.Object, cancellationToken).WithCancellation(cancellationToken);
+        var stream = mediator.CreateStream(command.Object, cancellationToken);
 
         await foreach (var item in stream)
         {

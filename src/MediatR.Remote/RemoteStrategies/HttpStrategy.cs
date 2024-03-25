@@ -48,44 +48,33 @@ public class RemoteHttpStrategy(
         response.EnsureSuccessStatusCode();
     }
 
-    /// <summary>
-    ///     Invokes stream the remote mediator.
-    /// </summary>
-    /// <param name="myRoleNames">My role name</param>
-    /// <param name="targetRoleName">Target role name</param>
-    /// <param name="nextSpans">Next role names.</param>
-    /// <param name="command">Remote mediator stream object</param>
-    /// <param name="cancellationToken">CancellationToken object</param>
-    /// <returns>Invoked stream result</returns>
-    /// <exception cref="ArgumentNullException">If any parameters is null</exception>
-    public async IAsyncEnumerable<RemoteMediatorStreamResult?> InvokeStreamAsync(IEnumerable<string> myRoleNames,
-        string targetRoleName, IEnumerable<string> nextSpans, RemoteMediatorStreamCommand command,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    protected override async IAsyncEnumerable<RemoteMediatorStreamResult?> StreamInternalAsync(string targetRoleName,
+        RemoteMediatorCommand nextCommand,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        _ = myRoleNames ?? throw new ArgumentNullException(nameof(myRoleNames));
-        _ = targetRoleName ?? throw new ArgumentNullException(nameof(targetRoleName));
-        _ = nextSpans ?? throw new ArgumentNullException(nameof(nextSpans));
-        _ = command ?? throw new ArgumentNullException(nameof(command));
-
-        var options = remoteMediatorOptions.Get(command.ProtocolName);
-        var httpClientName = ProtocolRoleName.Generate(command.ProtocolName, targetRoleName);
+        var httpClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
         var httpClient = httpClientFactory.CreateClient(httpClientName);
-        var newCommand = new RemoteMediatorCommand(command.Object, command.ProtocolName, nextSpans);
-        var json = JsonSerializer.Serialize(newCommand, options.JsonSerializerOptions);
+        var options = remoteMediatorOptions.Get(nextCommand.ProtocolName);
+        var json = JsonSerializer.Serialize(nextCommand, options.JsonSerializerOptions);
         var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, options.MediatorRemoteEndpoint);
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, options.MediatorStreamRemoteEndpoint);
         httpRequestMessage.Content = stringContent;
+
+        // var response =
+        //     await httpClient.PostAsync(options.MediatorStreamRemoteEndpoint, stringContent, cancellationToken);
+        // response.EnsureSuccessStatusCode();
         var response = await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead,
             cancellationToken);
+        response.EnsureSuccessStatusCode();
 
         var stream = await response.Content.ReadAsStreamAsync();
         var newOptions = new JsonSerializerOptions(options.JsonSerializerOptions) { DefaultBufferSize = 1 };
-        var asyncEnumerable = JsonSerializer.DeserializeAsyncEnumerable<RemoteMediatorStreamResult?>(stream,
+        var results = JsonSerializer.DeserializeAsyncEnumerable<RemoteMediatorStreamResult>(stream,
             newOptions, cancellationToken);
 
-        await foreach (var item in asyncEnumerable)
+        await foreach (var result in results)
         {
-            yield return item;
+            yield return result;
         }
     }
 }

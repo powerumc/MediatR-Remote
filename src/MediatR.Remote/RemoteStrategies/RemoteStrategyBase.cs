@@ -54,7 +54,23 @@ public abstract class RemoteStrategyBase : IRemoteStrategy
         string targetRoleName, IEnumerable<string> nextSpans,
         RemoteMediatorStreamCommand command, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _ = myRoleNames ?? throw new ArgumentNullException(nameof(myRoleNames));
+        _ = targetRoleName ?? throw new ArgumentNullException(nameof(targetRoleName));
+        _ = nextSpans ?? throw new ArgumentNullException(nameof(nextSpans));
+        _ = command ?? throw new ArgumentNullException(nameof(command));
+
+        var nextCommand = new RemoteMediatorCommand(command.Object, command.ProtocolName, nextSpans);
+
+        switch (command.Object)
+        {
+            case IRemoteStreamRequest:
+                var result = StreamInternalAsync(targetRoleName, nextCommand, cancellationToken);
+                return result;
+
+            default:
+                throw new InvalidOperationException(
+                    $"{nameof(InvokeStreamAsync)} is only supports {nameof(IRemoteStreamRequest)})");
+        }
     }
 
     /// <summary>
@@ -77,6 +93,18 @@ public abstract class RemoteStrategyBase : IRemoteStrategy
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <returns>Invoke result</returns>
     protected abstract Task NotificationInternalAsync(
+        string targetRoleName,
+        RemoteMediatorCommand nextCommand,
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Notify the request to the target role.
+    /// </summary>
+    /// <param name="targetRoleName">Target role name</param>
+    /// <param name="nextCommand">Command of a object and next span</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <returns>Invoke result</returns>
+    protected abstract IAsyncEnumerable<RemoteMediatorStreamResult?> StreamInternalAsync(
         string targetRoleName,
         RemoteMediatorCommand nextCommand,
         CancellationToken cancellationToken);

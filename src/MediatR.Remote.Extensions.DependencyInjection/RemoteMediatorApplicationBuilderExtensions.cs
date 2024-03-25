@@ -17,10 +17,9 @@ public static class RemoteMediatorApplicationBuilderExtensions
     public static RemoteMediatorApplicationBuilder UseHttpListener(this RemoteMediatorApplicationBuilder builder)
     {
         var serviceProvider = builder.WebApplication.Services;
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<RemoteMediatorOptions>>().Get("http");
         builder.WebApplication.UseEndpoints(endpointRouteBuilder =>
         {
-            var options = serviceProvider.GetRequiredService<IOptionsMonitor<RemoteMediatorOptions>>()
-                .Get("http");
             endpointRouteBuilder.MapPost(options.MediatorRemoteEndpoint,
                 async (
                     [FromServices] MediatorRemoteEndpoint endpoint,
@@ -34,6 +33,21 @@ public static class RemoteMediatorApplicationBuilderExtensions
                     var result = await endpoint.InvokeAsync(command, cancellationToken);
                     return Results.Json(result, jsonSerializerOptions);
                 });
+
+            endpointRouteBuilder.MapPost(options.MediatorStreamRemoteEndpoint, async (
+                [FromServices] MediatorRemoteEndpoint endpoint,
+                [FromBody] JsonObject jsonObject,
+                HttpContext context,
+                CancellationToken cancellationToken) =>
+            {
+                var jsonSerializerOptions = options.JsonSerializerOptions;
+                var command = jsonObject.Deserialize<RemoteMediatorStreamCommand>(jsonSerializerOptions);
+                ArgumentNullException.ThrowIfNull(command);
+
+                var result = endpoint.InvokeStreamAsync(command, cancellationToken);
+                await new ResultAsyncEnumerable<RemoteMediatorStreamResult>(result, jsonSerializerOptions)
+                    .ExecuteStream(context.Response, cancellationToken);
+            });
         });
 
         return builder;
@@ -47,7 +61,7 @@ public static class RemoteMediatorApplicationBuilderExtensions
         var routeBuilder = builder.EndpointRouteBuilder;
         var options = routeBuilder.ServiceProvider.GetRequiredService<IOptionsMonitor<RemoteMediatorOptions>>()
             .Get("http");
-        return routeBuilder.MapPost(options.MediatorRemoteEndpoint, async (
+        routeBuilder.MapPost(options.MediatorRemoteEndpoint, async (
             [FromServices] MediatorRemoteEndpoint endpoint,
             JsonObject jsonObject,
             CancellationToken cancellationToken) =>
@@ -58,6 +72,21 @@ public static class RemoteMediatorApplicationBuilderExtensions
 
             var result = await endpoint.InvokeAsync(command, cancellationToken);
             return Results.Json(result, jsonSerializerOptions);
+        });
+
+        return routeBuilder.MapPost(options.MediatorStreamRemoteEndpoint, async (
+            [FromServices] MediatorRemoteEndpoint endpoint,
+            [FromBody] JsonObject jsonObject,
+            HttpContext context,
+            CancellationToken cancellationToken) =>
+        {
+            var jsonSerializerOptions = options.JsonSerializerOptions;
+            var command = jsonObject.Deserialize<RemoteMediatorStreamCommand>(jsonSerializerOptions);
+            ArgumentNullException.ThrowIfNull(command);
+
+            var result = endpoint.InvokeStreamAsync(command, cancellationToken);
+            await new ResultAsyncEnumerable<RemoteMediatorStreamResult>(result, jsonSerializerOptions)
+                .ExecuteStream(context.Response, cancellationToken);
         });
     }
 }

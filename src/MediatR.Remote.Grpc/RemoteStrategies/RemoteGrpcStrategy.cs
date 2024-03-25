@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Grpc.Core;
 using Grpc.Net.ClientFactory;
 using MediatR.Remote.RemoteStrategies;
 
@@ -32,5 +34,21 @@ public class RemoteGrpcStrategy(GrpcClientFactory grpcClientFactory) : RemoteStr
         var client = grpcClientFactory.CreateClient<MediatorGrpc.MediatorGrpcClient>(grpcClientName);
         var payload = new GrpcNotificationRequest { Type = "", Object = JsonSerializer.Serialize(nextCommand) };
         await client.GrpcNotificationServiceAsync(payload, cancellationToken: cancellationToken);
+    }
+
+    protected override async IAsyncEnumerable<RemoteMediatorStreamResult?> StreamInternalAsync(string targetRoleName,
+        RemoteMediatorCommand nextCommand,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var grpcClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
+        var client = grpcClientFactory.CreateClient<MediatorGrpc.MediatorGrpcClient>(grpcClientName);
+        var payload = new GrpcStreamCommandRequest { Type = "", Object = JsonSerializer.Serialize(nextCommand) };
+        var serverStream = client.GrpcStreamService(payload, cancellationToken: cancellationToken);
+        var stream = serverStream.ResponseStream.ReadAllAsync(cancellationToken);
+        await foreach (var result in stream)
+        {
+            var obj = JsonSerializer.Deserialize<RemoteMediatorStreamResult>(result.Object);
+            yield return obj;
+        }
     }
 }

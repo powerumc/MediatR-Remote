@@ -63,6 +63,11 @@ public class RemoteMediatorBuilder(IServiceCollection services)
     /// </summary>
     internal static string MediatorRemoteEndpoint => "mediator-remote";
 
+    /// <summary>
+    ///     Stream default HTTP endpoint
+    /// </summary>
+    internal static string MediatorStreamRemoteEndpoint => "mediator-stream-remote";
+
     public RemoteMediatorBuilder OverrideJsonSerializerOptions(Action<JsonSerializerOptions> options)
     {
         options(JsonSerializerOptions);

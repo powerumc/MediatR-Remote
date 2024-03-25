@@ -11,17 +11,12 @@ public class MediatorRemoteEndpoint(
     /// <summary>
     ///     Invokes the Mediator to handle the <see cref="IRemoteCommand" />
     /// </summary>
-    public Task<RemoteMediatorResult> InvokeAsync(RemoteMediatorCommand command, CancellationToken cancellationToken)
+    public async Task<RemoteMediatorResult> InvokeAsync(RemoteMediatorCommand command,
+        CancellationToken cancellationToken)
     {
         using var disposable = logger.BeginScope(nameof(InvokeAsync));
         logger.LogReceivedMessage(command.Object?.GetType()!, command.Spans!);
 
-        return InvokeInternalAsync(command, cancellationToken);
-    }
-
-    private async Task<RemoteMediatorResult> InvokeInternalAsync(RemoteMediatorCommand command,
-        CancellationToken cancellationToken)
-    {
         switch (command.Object)
         {
             case IRemoteRequest:
@@ -34,7 +29,25 @@ public class MediatorRemoteEndpoint(
 
             default:
                 throw new InvalidOperationException(
-                    $"{nameof(IRemoteMediator)} is only supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)} and {nameof(IRemoteStreamRequest)}");
+                    $"{nameof(InvokeAsync)} is only supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}");
+        }
+    }
+
+    public IAsyncEnumerable<RemoteMediatorStreamResult> InvokeStreamAsync(RemoteMediatorStreamCommand command,
+        CancellationToken cancellationToken)
+    {
+        using var disposable = logger.BeginScope(nameof(InvokeStreamAsync));
+        logger.LogReceivedMessage(command.Object?.GetType()!, command.Spans!);
+
+        switch (command.Object)
+        {
+            case IRemoteStreamRequest:
+                var result = mediator.CreateStream(command, cancellationToken);
+                return result;
+
+            default:
+                throw new InvalidOperationException(
+                    $"{nameof(InvokeStreamAsync)} is only supports {nameof(IRemoteStreamRequest)}");
         }
     }
 }

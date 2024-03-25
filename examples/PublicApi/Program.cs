@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection;
 using MediatR.Remote.Extensions.DependencyInjection;
 using MediatR.Remote.Grpc;
@@ -14,7 +15,7 @@ services.AddSwaggerGen();
 services.AddHttpLogging(options => options.LoggingFields = HttpLoggingFields.All);
 services.Configure<KestrelServerOptions>(options =>
 {
-    options.ListenLocalhost(5000, listenOptions => listenOptions.Protocols = HttpProtocols.Http1);
+    options.Listen(IPAddress.Any, 5000, listenOptions => listenOptions.Protocols = HttpProtocols.Http1);
     options.ListenLocalhost(5001, listenOptions => listenOptions.Protocols = HttpProtocols.Http2);
 });
 
@@ -33,6 +34,7 @@ services.AddRemoteMediatR<IGrpcMediator, GrpcMediator>("public-api", "grpc", rem
 });
 
 var app = builder.Build();
+app.UseHttpLogging();
 
 if (app.Environment.IsDevelopment())
 {
