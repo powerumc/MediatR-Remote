@@ -1,21 +1,11 @@
 namespace MediatR.Remote.Extensions.DependencyInjection;
 
-public class RemoteMediatorApplicationBuilder
+public class RemoteMediatorApplicationBuilder(WebApplication webApplication)
 {
-    public RemoteMediatorApplicationBuilder(IApplicationBuilder applicationBuilder)
-    {
-        ApplicationBuilder = applicationBuilder;
-    }
-
-    public IApplicationBuilder ApplicationBuilder { get; }
+    public WebApplication WebApplication { get; } = webApplication;
 }
 
-public class RemoteMediatorEndpointRouteBuilder
+public class RemoteMediatorEndpointRouteBuilder(IEndpointRouteBuilder endpointRouteBuilder)
 {
-    public RemoteMediatorEndpointRouteBuilder(IEndpointRouteBuilder endpointRouteBuilder)
-    {
-        EndpointRouteBuilder = endpointRouteBuilder;
-    }
-
-    public IEndpointRouteBuilder EndpointRouteBuilder { get; }
+    public IEndpointRouteBuilder EndpointRouteBuilder { get; } = endpointRouteBuilder;
 }

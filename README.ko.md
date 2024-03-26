@@ -96,6 +96,45 @@ class Test
 }
 ```
 
+## More Communication Strategies
+
+### HTTP
+
+```csharp
+// Configure Service
+services.AddRemoteMediatR("public-api", remoteBuilder =>
+{
+    remoteBuilder.AddHttpStrategy("internal-api1", client => client.BaseAddress = new Uri("http://localhost:5010"));
+});
+
+// Configure Middleware
+app.UseRemoteMediatR(routeBuilder => routeBuilder.MapHttpListener().AllowAnonymous());
+```
+
+### gRPC
+
+실험적인 기능
+
+```csharp
+// Define Custom IMediator Interface
+public interface IGrpcMediator : IRemoteMediator;
+
+public class GrpcMediator(IMediator mediator) : RemoteMediator(mediator), IGrpcMediator
+{
+    public override string ProtocolName => "grpc";
+}
+
+// Configure Service
+services.AddGrpc();
+services.AddRemoteMediatR<IGrpcMediator, GrpcMediator>("public-api", "grpc", remoteBuilder =>
+{
+    remoteBuilder.AddGrpcStrategy("internal-api1", client => client.Address = new Uri("http://localhost:5011"));
+});
+
+// Configure Middleware
+app.UseRemoteMediatR(applicationBuilder => applicationBuilder.UseGrpcListener());
+```
+
 ## 더 많은 예제
 
-* [HTTP 메시지 통신 예제](examples/http)
+* [메시지 통신 예제](examples)

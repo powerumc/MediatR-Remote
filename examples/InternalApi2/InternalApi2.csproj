@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MediatR.Remote.Extensions.DependencyInjection\MediatR.Remote.Extensions.DependencyInjection.csproj"/>
+    <ProjectReference Include="..\..\src\MediatR.Remote.Grpc\MediatR.Remote.Grpc.csproj"/>
+    <ProjectReference Include="..\Messages\Messages.csproj"/>
+  </ItemGroup>
+
+</Project>
