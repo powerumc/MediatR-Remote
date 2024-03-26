@@ -1,95 +1,53 @@
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using Microsoft.Extensions.Options;
-
 namespace MediatR.Remote.Extensions.DependencyInjection.Endpoints;
 
 /// <summary>
-/// Invokes the Mediator to handle the <see cref="RemoteMediatorCommand" /> and <see cref="RemoteMediatorStreamCommand" />
+///     Invokes the Mediator to handle the <see cref="RemoteMediatorCommand" /> and
+///     <see cref="RemoteMediatorStreamCommand" />
 /// </summary>
-internal class MediatorRemoteEndpoint
+public class MediatorRemoteEndpoint(
+    IMediator mediator,
+    ILogger<MediatorRemoteEndpoint> logger)
 {
-    private readonly ILogger<MediatorRemoteEndpoint> _logger;
-    private readonly IMediator _mediator;
-    private readonly IOptionsMonitor<RemoteMediatorOptions> _remoteMediatorOptions;
-
-    public MediatorRemoteEndpoint(IMediator mediator,
-        IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions,
-        ILogger<MediatorRemoteEndpoint> logger)
-    {
-        _mediator = mediator;
-        _remoteMediatorOptions = remoteMediatorOptions;
-        _logger = logger;
-    }
-
     /// <summary>
-    /// Invokes the Mediator to handle the <see cref="IRemoteCommand" />
+    ///     Invokes the Mediator to handle the <see cref="IRemoteCommand" />
     /// </summary>
-    /// <param name="httpContext"><see cref="HttpContext"/> object</param>
-    /// <param name="jsonObject">Received json</param>
-    /// <exception cref="InvalidOperationException">If <paramref name="jsonObject"/> is null</exception>
-    public async Task InvokeAsync(HttpContext httpContext, JsonObject jsonObject)
+    public async Task<RemoteMediatorResult> InvokeAsync(RemoteMediatorCommand command,
+        CancellationToken cancellationToken)
     {
-        var options = _remoteMediatorOptions.CurrentValue;
-        var jsonSerializerOptions = options.JsonSerializerOptions;
-        var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions)
-                      ?? throw new InvalidOperationException(
-                          $"Deserialized {nameof(RemoteMediatorCommand)} value must be not null.");
-
-        using var disposable = _logger.BeginScope(nameof(InvokeAsync));
-        _logger.LogReceivedMessage(command.Object?.GetType()!, command.Spans!);
-
-        await InvokeInternalAsync(_mediator, command, httpContext, jsonSerializerOptions);
-    }
-
-    private static async Task InvokeInternalAsync(IMediator mediator, RemoteMediatorCommand command,
-        HttpContext httpContext,
-        JsonSerializerOptions jsonSerializerOptions)
-    {
-        httpContext.Response.ContentType = MediaTypeNames.Application.Json;
+        using var disposable = logger.BeginScope(nameof(InvokeAsync));
+        logger.LogReceivedMessage(command.Object?.GetType()!, command.Spans!);
 
         switch (command.Object)
         {
             case IRemoteRequest:
-                var result = await mediator.Send(command);
-                await JsonSerializer.SerializeAsync(httpContext.Response.Body, result, jsonSerializerOptions);
-                break;
+                var result = await mediator.Send(command, cancellationToken);
+                return result;
 
             case IRemoteNotification:
-                await mediator.Publish(command);
-                break;
-
-            case IRemoteStreamRequest:
-                var streamCommand = new RemoteMediatorStreamCommand(command.Object, command.Spans);
-                var stream = mediator.CreateStream(streamCommand);
-
-                await httpContext.Response.WriteAsync("[", Encoding.UTF8);
-                await httpContext.Response.Body.FlushAsync();
-
-                var count = 0;
-                await foreach (var item in stream)
-                {
-                    if (count != 0)
-                    {
-                        await httpContext.Response.WriteAsync(",", Encoding.UTF8);
-                    }
-
-                    await httpContext.Response.WriteAsync(JsonSerializer.Serialize(item, jsonSerializerOptions),
-                        Encoding.UTF8);
-                    await httpContext.Response.Body.FlushAsync();
-
-                    count++;
-                }
-
-                await httpContext.Response.WriteAsync("]");
-                await httpContext.Response.Body.FlushAsync();
-                break;
+                await mediator.Publish(command, cancellationToken);
+                return new RemoteMediatorResult(null);
 
             default:
                 throw new InvalidOperationException(
-                    $"{nameof(IRemoteMediator)} is only supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)} and {nameof(IRemoteStreamRequest)}");
+                    $"{nameof(InvokeAsync)} is only supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}");
+        }
+    }
+
+    public IAsyncEnumerable<RemoteMediatorStreamResult> InvokeStreamAsync(RemoteMediatorStreamCommand command,
+        CancellationToken cancellationToken)
+    {
+        using var disposable = logger.BeginScope(nameof(InvokeStreamAsync));
+        logger.LogReceivedMessage(command.Object?.GetType()!, command.Spans!);
+
+        switch (command.Object)
+        {
+            case IRemoteStreamRequest:
+                var result = mediator.CreateStream(command, cancellationToken);
+                return result;
+
+            default:
+                throw new InvalidOperationException(
+                    $"{nameof(InvokeStreamAsync)} is only supports {nameof(IRemoteStreamRequest)}");
         }
     }
 }
