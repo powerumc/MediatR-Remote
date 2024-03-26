@@ -1,43 +1,45 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
-using System.Text.Json;
-using Google.Protobuf.WellKnownTypes;
+﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using MediatR.Remote.Extensions.DependencyInjection.Endpoints;
+using Microsoft.Extensions.Options;
 
 namespace MediatR.Remote.Grpc;
 
-public class MediatorGrpcService(MediatorRemoteEndpoint endpoint) : MediatorGrpc.MediatorGrpcBase
+public class MediatorGrpcServiceImpl(
+    MediatorRemoteEndpoint endpoint,
+    IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions) : MediatorGrpcService.MediatorGrpcServiceBase
 {
-    public override async Task<GrpcCommandResult> GrpcCommandService(GrpcCommandRequest request,
+    public override async Task<GrpcCommandResult> GrpcCommand(GrpcCommandRequest request,
         ServerCallContext context)
     {
-        var command = JsonSerializer.Deserialize<RemoteMediatorCommand>(request.Object)!;
-        var result = await endpoint.InvokeAsync(command, context.CancellationToken);
+        var options = remoteMediatorOptions.Get("grpc");
+        var command = await options.Serializer.DeserializeFromStringAsync<RemoteMediatorCommand>(request.Object);
+        var result = await endpoint.InvokeAsync(command!, context.CancellationToken);
+        var obj = await options.Serializer.SerializeAsStringAsync(result);
 
-        return new GrpcCommandResult { Type = request.Type, Object = JsonSerializer.Serialize(result) };
+        return new GrpcCommandResult { Object = obj };
     }
 
-    public override async Task<Empty> GrpcNotificationService(GrpcNotificationRequest request,
+    public override async Task<Empty> GrpcNotification(GrpcNotificationRequest request,
         ServerCallContext context)
     {
-        var command = JsonSerializer.Deserialize<RemoteMediatorCommand>(request.Object)!;
-        await endpoint.InvokeAsync(command, context.CancellationToken);
+        var options = remoteMediatorOptions.Get("grpc");
+        var command = await options.Serializer.DeserializeFromStringAsync<RemoteMediatorCommand>(request.Object);
+        await endpoint.InvokeAsync(command!, context.CancellationToken);
         return new Empty();
     }
 
-    public override async Task GrpcStreamService(GrpcStreamCommandRequest request,
+    public override async Task GrpcStream(GrpcStreamCommandRequest request,
         IServerStreamWriter<GrpcStreamCommandResult> responseStream, ServerCallContext context)
     {
-        var command = JsonSerializer.Deserialize<RemoteMediatorStreamCommand>(request.Object)!;
-        var results = endpoint.InvokeStreamAsync(command, context.CancellationToken);
+        var options = remoteMediatorOptions.Get("grpc");
+        var command = await options.Serializer.DeserializeFromStringAsync<RemoteMediatorStreamCommand>(request.Object);
+        var results = endpoint.InvokeStreamAsync(command!, context.CancellationToken);
 
         await foreach (var result in results)
         {
-            var grpcResult =
-                new GrpcStreamCommandResult { Type = request.Type, Object = JsonSerializer.Serialize(result) };
+            var json = await options.Serializer.SerializeAsStringAsync(result);
+            var grpcResult = new GrpcStreamCommandResult { Object = json };
             await responseStream.WriteAsync(grpcResult, context.CancellationToken);
         }
     }

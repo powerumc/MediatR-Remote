@@ -6,33 +6,28 @@ import "google/protobuf/any.proto";
 
 package MediatR.Remote.Grpc;
 
-service MediatorGrpc {
-  rpc GrpcCommandService (GrpcCommandRequest) returns (GrpcCommandResult);
-  rpc GrpcNotificationService (GrpcNotificationRequest) returns (google.protobuf.Empty);
-  rpc GrpcStreamService (GrpcStreamCommandRequest) returns (stream GrpcStreamCommandResult);
+service MediatorGrpcService {
+  rpc GrpcCommand (GrpcCommandRequest) returns (GrpcCommandResult);
+  rpc GrpcNotification (GrpcNotificationRequest) returns (google.protobuf.Empty);
+  rpc GrpcStream (GrpcStreamCommandRequest) returns (stream GrpcStreamCommandResult);
 }
 
 message GrpcCommandRequest {
-  string Type = 1;
-  string Object = 2;
+  string Object = 1;
 }
 
 message GrpcCommandResult {
-  string Type = 1;
-  string Object = 2;
+  string Object = 1;
 }
 
 message GrpcNotificationRequest {
-  string Type = 1;
-  string Object = 2;
+  string Object = 1;
 }
 
 message GrpcStreamCommandRequest {
-  string Type = 1;
-  string Object = 2;
+  string Object = 1;
 }
 
 message GrpcStreamCommandResult {
-  string Type = 1;
-  string Object = 2;
+  string Object = 1;
 }

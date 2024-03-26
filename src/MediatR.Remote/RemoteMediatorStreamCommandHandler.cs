@@ -10,7 +10,7 @@ namespace MediatR.Remote;
 internal class RemoteMediatorStreamCommandHandler(
     ILogger<RemoteMediatorStreamCommandHandler> logger,
     IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions,
-    IServiceScopeFactory serviceScopeFactory,
+    IServiceProvider serviceProvider,
     IMediatorInvoker mediatorInvoker)
     : RemoteMediatorCommandHandlerBase,
         IStreamRequestHandler<RemoteMediatorStreamCommand, RemoteMediatorStreamResult?>
@@ -46,7 +46,6 @@ internal class RemoteMediatorStreamCommandHandler(
             throw new InvalidOperationException($"'{targetRoleName}' is not contains the remote strategies.");
         }
 
-        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var command = new RemoteMediatorStreamCommand(request.Object, request.ProtocolName, nextSpans);
         var remoteResult = InvokeRemoteStreamAsync(serviceProvider, myRoleNames, targetRoleName, nextSpans,
             command, remoteStrategyType, cancellationToken);

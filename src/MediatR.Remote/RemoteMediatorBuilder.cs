@@ -4,59 +4,17 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MediatR.Remote;
 
-public class ProtocolRoleName(string protocolName, string name)
-{
-    public string ProtocolName => protocolName;
-    public string Name => name;
-
-    public override string ToString()
-    {
-        return Generate(protocolName, name);
-    }
-
-    public static string Generate(string protocolName, string name)
-    {
-        return $"{name}_{protocolName}";
-    }
-
-    protected bool Equals(ProtocolRoleName other)
-    {
-        return ProtocolName == other.ProtocolName && Name == other.Name;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj))
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, obj))
-        {
-            return true;
-        }
-
-        if (obj.GetType() != GetType())
-        {
-            return false;
-        }
-
-        return Equals((ProtocolRoleName)obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(ProtocolName, Name);
-    }
-}
-
 public class RemoteMediatorBuilder(IServiceCollection services)
 {
-    internal readonly JsonSerializerOptions JsonSerializerOptions = new();
     internal readonly IServiceCollection Services = services;
 
     internal readonly IDictionary<ProtocolRoleName, StrategyTypes> Strategies =
         new Dictionary<ProtocolRoleName, StrategyTypes>();
+
+    /// <summary>
+    ///     Json serializer options
+    /// </summary>
+    internal JsonSerializerOptions JsonSerializerOptions { get; } = new();
 
     /// <summary>
     ///     Default HTTP endpoint
@@ -67,6 +25,11 @@ public class RemoteMediatorBuilder(IServiceCollection services)
     ///     Default streaming HTTP endpoint
     /// </summary>
     internal static string MediatorStreamRemoteEndpoint => "mediator-stream-remote";
+
+    /// <summary>
+    ///     Remote serializer
+    /// </summary>
+    public IRemoteSerializer? Serializer { get; set; }
 
     public RemoteMediatorBuilder OverrideJsonSerializerOptions(Action<JsonSerializerOptions> options)
     {
@@ -104,5 +67,51 @@ public class RemoteMediatorBuilder(IServiceCollection services)
             strategyTypes.NotificationStrategyType, strategyTypes.NotificationStrategyType, serviceLifetime));
         Services.TryAdd(ServiceDescriptor.Describe(
             strategyTypes.StreamStrategyType, strategyTypes.StreamStrategyType, serviceLifetime));
+    }
+}
+
+public sealed class ProtocolRoleName(string protocolName, string name)
+{
+    public string ProtocolName => protocolName;
+    public string Name => name;
+
+    public override string ToString()
+    {
+        return Generate(protocolName, name);
+    }
+
+    public static string Generate(string protocolName, string name)
+    {
+        return $"{name}_{protocolName}";
+    }
+
+    private bool Equals(ProtocolRoleName other)
+    {
+        return ProtocolName == other.ProtocolName && Name == other.Name;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj.GetType() != GetType())
+        {
+            return false;
+        }
+
+        return Equals((ProtocolRoleName)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(ProtocolName, Name);
     }
 }

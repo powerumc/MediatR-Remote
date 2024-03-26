@@ -32,5 +32,13 @@ public class RemoteMediatorOptions
     /// </summary>
     public JsonSerializerOptions JsonSerializerOptions { get; set; } = null!;
 
+    /// <summary>
+    ///     Protocol name
+    /// </summary>
     public string ProtocolName { get; set; } = null!;
+
+    /// <summary>
+    ///     Remote serializer
+    /// </summary>
+    public IRemoteSerializer Serializer { get; set; } = null!;
 }

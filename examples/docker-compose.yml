@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  public-api:
+    container_name: public-api
+    build:
+      context: ..
+      dockerfile: examples/PublicApi/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    networks:
+      - internal
+  
+  internal-api1:
+    container_name: internal-api1
+    build:
+      context: ..
+      dockerfile: examples/InternalApi1/Dockerfile
+    ports:
+      - "5010:5010"
+      - "5011:5011"
+    networks:
+      - internal
+  
+  internal-api2:
+    container_name: internal-api2
+    build:
+      context: ..
+      dockerfile: examples/InternalApi2/Dockerfile
+    ports:
+      - "5020:5020"
+      - "5021:5021"
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge

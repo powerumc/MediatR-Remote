@@ -36,8 +36,7 @@ public abstract class RemoteStrategyBase : IRemoteStrategy
         switch (command.Object)
         {
             case IRemoteRequest:
-                var result =
-                    await SendInternalAsync(targetRoleName, nextCommand, cancellationToken);
+                var result = await SendInternalAsync(targetRoleName, nextCommand, cancellationToken);
                 return result;
 
             case IRemoteNotification:
