@@ -1,0 +1,26 @@
+<Project>
+    <!-- 프로젝트 공통 설정 -->
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <!-- 프로젝트 공통 속성 -->
+    <PropertyGroup>
+        <MicrosoftPackageVersion>8.0.0</MicrosoftPackageVersion>
+    </PropertyGroup>
+
+    <!-- 패키지 공통 설정 -->
+    <ItemGroup>
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="9.15.0.81779">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="IDisposableAnalyzers" Version="4.0.7">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+</Project>

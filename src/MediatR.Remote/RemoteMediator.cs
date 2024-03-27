@@ -3,16 +3,11 @@ using System.Runtime.CompilerServices;
 namespace MediatR.Remote;
 
 /// <summary>
-/// A mediator implementation that can handle remote requests.
+///     A mediator implementation that can handle remote requests.
 /// </summary>
-internal class RemoteMediator : IRemoteMediator
+public class RemoteMediator(IMediator mediator) : IRemoteMediator
 {
-    private readonly IMediator _mediator;
-
-    public RemoteMediator(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
+    public virtual string ProtocolName => "http";
 
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request,
         CancellationToken cancellationToken = new())
@@ -21,23 +16,24 @@ internal class RemoteMediator : IRemoteMediator
 
         if (request is IRemoteRequest)
         {
-            var response = await _mediator.Send(new RemoteMediatorCommand(request), cancellationToken);
+            var response = await mediator.Send(new RemoteMediatorCommand(request, ProtocolName), cancellationToken);
             return (TResponse)response.Object!;
         }
 
-        return await _mediator.Send(request, cancellationToken);
+        return await mediator.Send(request, cancellationToken);
     }
 
-    public async Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = new()) where TRequest : IRequest
+    public async Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = new())
+        where TRequest : IRequest
     {
         _ = request ?? throw new ArgumentNullException(nameof(request));
 
         if (request is IRemoteRequest)
         {
-            await _mediator.Send(new RemoteMediatorCommand(request), cancellationToken);
+            await mediator.Send(new RemoteMediatorCommand(request, ProtocolName), cancellationToken);
         }
 
-        await _mediator.Send(request, cancellationToken);
+        await mediator.Send(request, cancellationToken);
     }
 
     public async Task<object?> Send(object request, CancellationToken cancellationToken = new())
@@ -46,11 +42,11 @@ internal class RemoteMediator : IRemoteMediator
 
         if (request is IRemoteRequest)
         {
-            var response = await _mediator.Send(new RemoteMediatorCommand(request), cancellationToken);
+            var response = await mediator.Send(new RemoteMediatorCommand(request, ProtocolName), cancellationToken);
             return response.Object;
         }
 
-        return await _mediator.Send(request, cancellationToken);
+        return await mediator.Send(request, cancellationToken);
     }
 
     public async IAsyncEnumerable<TResponse> CreateStream<TResponse>(IStreamRequest<TResponse> request,
@@ -60,20 +56,23 @@ internal class RemoteMediator : IRemoteMediator
 
         if (request is IRemoteStreamRequest)
         {
-            var command = new RemoteMediatorStreamCommand(request);
-            var stream = _mediator.CreateStream(command, cancellationToken).WithCancellation(cancellationToken);
+            var command = new RemoteMediatorStreamCommand(request, ProtocolName);
+            var stream = mediator.CreateStream(command, cancellationToken);
 
             await foreach (var item in stream)
             {
-                if (item.Object is null) continue;
+                if (item.Object is null)
+                {
+                    continue;
+                }
 
                 yield return (TResponse)item.Object!;
             }
-            
+
             yield break;
         }
 
-        await foreach (var item in _mediator.CreateStream(request, cancellationToken))
+        await foreach (var item in mediator.CreateStream(request, cancellationToken))
         {
             yield return item;
         }
@@ -85,10 +84,10 @@ internal class RemoteMediator : IRemoteMediator
 
         if (request is IRemoteStreamRequest)
         {
-            return _mediator.CreateStream(new RemoteMediatorStreamCommand(request), cancellationToken);
+            return mediator.CreateStream(new RemoteMediatorStreamCommand(request, ProtocolName), cancellationToken);
         }
 
-        return _mediator.CreateStream(request, cancellationToken);
+        return mediator.CreateStream(request, cancellationToken);
     }
 
     public async Task Publish(object notification, CancellationToken cancellationToken = new())
@@ -97,11 +96,11 @@ internal class RemoteMediator : IRemoteMediator
 
         if (notification is IRemoteNotification)
         {
-            await _mediator.Publish(new RemoteMediatorCommand(notification), cancellationToken);
+            await mediator.Publish(new RemoteMediatorCommand(notification, ProtocolName), cancellationToken);
             return;
         }
 
-        await _mediator.Publish(notification, cancellationToken);
+        await mediator.Publish(notification, cancellationToken);
     }
 
     public async Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = new())
@@ -111,10 +110,10 @@ internal class RemoteMediator : IRemoteMediator
 
         if (notification is IRemoteNotification)
         {
-            await _mediator.Publish(new RemoteMediatorCommand(notification), cancellationToken);
+            await mediator.Publish(new RemoteMediatorCommand(notification, ProtocolName), cancellationToken);
             return;
         }
 
-        await _mediator.Publish(notification, cancellationToken);
+        await mediator.Publish(notification, cancellationToken);
     }
 }
