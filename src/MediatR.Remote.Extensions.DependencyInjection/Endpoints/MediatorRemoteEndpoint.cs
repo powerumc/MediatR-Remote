@@ -90,7 +90,7 @@ internal class MediatorRemoteEndpoint
 
             default:
                 throw new InvalidOperationException(
-                    $"MediatorRemote is supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}");
+                    $"{nameof(IRemoteMediator)} is only supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)} and {nameof(IRemoteStreamRequest)}");
         }
     }
 }
