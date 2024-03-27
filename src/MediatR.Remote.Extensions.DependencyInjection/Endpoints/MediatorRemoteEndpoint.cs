@@ -25,8 +25,6 @@ internal class MediatorRemoteEndpoint
     {
         var options = _remoteMediatorOptions.CurrentValue;
         var jsonSerializerOptions = options.JsonSerializerOptions;
-        var myRoleNames = options.MyRoleNames;
-
         var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions)
                       ?? throw new InvalidOperationException(
                           $"Deserialized {nameof(RemoteMediatorCommand)} value must be not null.");
