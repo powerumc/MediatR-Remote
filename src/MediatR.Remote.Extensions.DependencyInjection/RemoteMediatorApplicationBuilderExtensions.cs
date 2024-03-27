@@ -24,13 +24,14 @@ public static class RemoteMediatorApplicationBuilderExtensions
             endpointRouteBuilder.MapPost(options.MediatorRemoteEndpoint,
                 async (
                     [FromServices] MediatorRemoteEndpoint endpoint,
-                    [FromBody] JsonObject jsonObject) =>
+                    [FromBody] JsonObject jsonObject,
+                    CancellationToken cancellationToken) =>
                 {
                     var jsonSerializerOptions = options.JsonSerializerOptions;
                     var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions);
                     ArgumentNullException.ThrowIfNull(command);
 
-                    var result = await endpoint.InvokeAsync(command);
+                    var result = await endpoint.InvokeAsync(command, cancellationToken);
                     return Results.Json(result, jsonSerializerOptions);
                 });
         });
@@ -47,13 +48,14 @@ public static class RemoteMediatorApplicationBuilderExtensions
         var options = routeBuilder.ServiceProvider.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
         return routeBuilder.MapPost(options.MediatorRemoteEndpoint, async (
             [FromServices] MediatorRemoteEndpoint endpoint,
-            JsonObject jsonObject) =>
+            JsonObject jsonObject,
+            CancellationToken cancellationToken) =>
         {
             var jsonSerializerOptions = options.JsonSerializerOptions;
             var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions);
             ArgumentNullException.ThrowIfNull(command);
 
-            var result = await endpoint.InvokeAsync(command);
+            var result = await endpoint.InvokeAsync(command, cancellationToken);
             return Results.Json(result, jsonSerializerOptions);
         });
     }

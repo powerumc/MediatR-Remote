@@ -4,41 +4,32 @@ namespace MediatR.Remote.Extensions.DependencyInjection.Endpoints;
 ///     Invokes the Mediator to handle the <see cref="RemoteMediatorCommand" /> and
 ///     <see cref="RemoteMediatorStreamCommand" />
 /// </summary>
-public class MediatorRemoteEndpoint
+public class MediatorRemoteEndpoint(
+    IMediator mediator,
+    ILogger<MediatorRemoteEndpoint> logger)
 {
-    private readonly ILogger<MediatorRemoteEndpoint> _logger;
-    private readonly IMediator _mediator;
-
-    public MediatorRemoteEndpoint(
-        IMediator mediator,
-        ILogger<MediatorRemoteEndpoint> logger)
-    {
-        _mediator = mediator;
-        _logger = logger;
-    }
-
     /// <summary>
     ///     Invokes the Mediator to handle the <see cref="IRemoteCommand" />
     /// </summary>
-    public Task<RemoteMediatorResult> InvokeAsync(RemoteMediatorCommand command)
+    public Task<RemoteMediatorResult> InvokeAsync(RemoteMediatorCommand command, CancellationToken cancellationToken)
     {
-        using var disposable = _logger.BeginScope(nameof(InvokeAsync));
-        _logger.LogReceivedMessage(command.Object?.GetType()!, command.Spans!);
+        using var disposable = logger.BeginScope(nameof(InvokeAsync));
+        logger.LogReceivedMessage(command.Object?.GetType()!, command.Spans!);
 
-        return InvokeInternalAsync(_mediator, command);
+        return InvokeInternalAsync(command, cancellationToken);
     }
 
-    private async Task<RemoteMediatorResult> InvokeInternalAsync(IMediator mediator,
-        RemoteMediatorCommand command)
+    private async Task<RemoteMediatorResult> InvokeInternalAsync(RemoteMediatorCommand command,
+        CancellationToken cancellationToken)
     {
         switch (command.Object)
         {
             case IRemoteRequest:
-                var result = await mediator.Send(command);
+                var result = await mediator.Send(command, cancellationToken);
                 return result;
 
             case IRemoteNotification:
-                await mediator.Publish(command);
+                await mediator.Publish(command, cancellationToken);
                 return new RemoteMediatorResult(null);
 
             default:

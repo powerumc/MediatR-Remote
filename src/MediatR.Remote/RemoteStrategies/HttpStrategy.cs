@@ -12,23 +12,16 @@ namespace MediatR.Remote.RemoteStrategies;
 ///     A remote strategy that uses HTTP to send the request to the target role.
 /// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-public class RemoteHttpStrategy : RemoteStrategyBase
+public class RemoteHttpStrategy(
+    IHttpClientFactory httpClientFactory,
+    IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions)
+    : RemoteStrategyBase
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IOptionsMonitor<RemoteMediatorOptions> _remoteMediatorOptions;
-
-    public RemoteHttpStrategy(IHttpClientFactory httpClientFactory,
-        IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions)
-    {
-        _httpClientFactory = httpClientFactory;
-        _remoteMediatorOptions = remoteMediatorOptions;
-    }
-
     protected override async Task<RemoteMediatorResult?> SendInternalAsync(string targetRoleName,
         RemoteMediatorCommand nextCommand, CancellationToken cancellationToken)
     {
-        var httpClient = _httpClientFactory.CreateClient(targetRoleName);
-        var options = _remoteMediatorOptions.CurrentValue;
+        var httpClient = httpClientFactory.CreateClient(targetRoleName);
+        var options = remoteMediatorOptions.CurrentValue;
         var json = JsonSerializer.Serialize(nextCommand, options.JsonSerializerOptions);
         var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
@@ -44,8 +37,8 @@ public class RemoteHttpStrategy : RemoteStrategyBase
     protected override async Task NotificationInternalAsync(string targetRoleName,
         RemoteMediatorCommand nextCommand, CancellationToken cancellationToken)
     {
-        var httpClient = _httpClientFactory.CreateClient(targetRoleName);
-        var options = _remoteMediatorOptions.CurrentValue;
+        var httpClient = httpClientFactory.CreateClient(targetRoleName);
+        var options = remoteMediatorOptions.CurrentValue;
         var json = JsonSerializer.Serialize(nextCommand, options.JsonSerializerOptions);
         var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
@@ -72,8 +65,8 @@ public class RemoteHttpStrategy : RemoteStrategyBase
         _ = nextSpans ?? throw new ArgumentNullException(nameof(nextSpans));
         _ = command ?? throw new ArgumentNullException(nameof(command));
 
-        var options = _remoteMediatorOptions.CurrentValue;
-        var httpClient = _httpClientFactory.CreateClient(targetRoleName);
+        var options = remoteMediatorOptions.CurrentValue;
+        var httpClient = httpClientFactory.CreateClient(targetRoleName);
         var newCommand = new RemoteMediatorCommand(command.Object, nextSpans);
         var json = JsonSerializer.Serialize(newCommand, options.JsonSerializerOptions);
         var stringContent = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);

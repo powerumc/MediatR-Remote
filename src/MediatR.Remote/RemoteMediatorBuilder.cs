@@ -4,17 +4,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MediatR.Remote;
 
-public class RemoteMediatorBuilder
+public class RemoteMediatorBuilder(IServiceCollection services)
 {
     internal readonly JsonSerializerOptions JsonSerializerOptions = new();
-    internal readonly IServiceCollection Services;
+    internal readonly IServiceCollection Services = services;
     internal readonly IDictionary<string, StrategyTypes> Strategies = new Dictionary<string, StrategyTypes>();
-
-
-    public RemoteMediatorBuilder(IServiceCollection services)
-    {
-        Services = services;
-    }
 
     /// <summary>
     ///     Default HTTP endpoint
