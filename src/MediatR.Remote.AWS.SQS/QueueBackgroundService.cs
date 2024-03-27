@@ -5,23 +5,23 @@ using Microsoft.Extensions.Options;
 
 namespace MediatR.Remote.AWS.SQS;
 
-public class QueueListener(
+public class QueueBackgroundService(
     IQueueMessageProcessor messageProcessor,
     IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions,
     IOptionsMonitor<AwsSqsOptions> sqsOptions,
-    ILogger<QueueListener> logger)
+    ILogger<QueueBackgroundService> logger)
     : BackgroundService
 {
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation($"Starting {nameof(QueueListener)}");
+        logger.LogInformation($"Starting {nameof(QueueBackgroundService)}");
 
         return base.StartAsync(cancellationToken);
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation($"Stopping {nameof(QueueListener)}");
+        logger.LogInformation($"Stopping {nameof(QueueBackgroundService)}");
 
         return base.StopAsync(cancellationToken);
     }

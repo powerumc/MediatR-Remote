@@ -27,7 +27,7 @@ public class RemoteAwsSqsStrategy(
             MessageGroupId = options.MessageGroupIdGenerator(serviceProvider, nextCommand),
             MessageDeduplicationId = options.MessageDeduplicationIdGenerator(serviceProvider, nextCommand)
         };
-        var response = await options.Client.SendMessageAsync(request, cancellationToken);
+        await options.Client.SendMessageAsync(request, cancellationToken);
     }
 
     protected override IAsyncEnumerable<RemoteMediatorStreamResult?> StreamInternalAsync(string targetRoleName,
