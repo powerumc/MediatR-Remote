@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using System.Text;
 
 namespace MediatR.Remote;
 
@@ -14,17 +14,15 @@ public static class RemoteSerializerExtensions
     public static async Task<string> SerializeAsStringAsync<T>(this IRemoteSerializer serializer, T value,
         CancellationToken cancellationToken = default)
     {
-        // var stream = await serializer.SerializeAsync(value, cancellationToken);
-        // using var reader = new StreamReader(stream);
-        // return await reader.ReadToEndAsync();
-        return JsonSerializer.Serialize(value);
+        var stream = await serializer.SerializeAsync(value, cancellationToken);
+        using var reader = new StreamReader(stream);
+        return await reader.ReadToEndAsync();
     }
 
     public static async Task<T?> DeserializeFromStringAsync<T>(this IRemoteSerializer serializer, string value,
         CancellationToken cancellationToken = default)
     {
-        // await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(value));
-        // return await serializer.DeserializeAsync<T>(stream, cancellationToken);
-        return JsonSerializer.Deserialize<T>(value);
+        await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(value));
+        return await serializer.DeserializeAsync<T>(stream, cancellationToken);
     }
 }
