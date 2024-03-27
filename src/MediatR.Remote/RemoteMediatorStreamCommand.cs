@@ -3,30 +3,36 @@ using MediatR.Remote.Json;
 
 namespace MediatR.Remote;
 
-public class RemoteMediatorStreamCommand : IStreamRequest<RemoteMediatorStreamResult>
+/// <summary>
+///     A protocol for sending a stream request to a remote mediator.
+/// </summary>
+[method: JsonConstructor]
+public class RemoteMediatorStreamCommand(object? @object, string protocolName, IEnumerable<string>? spans = null)
+    : IStreamRequest<RemoteMediatorStreamResult>
 {
-    [JsonConstructor]
-    public RemoteMediatorStreamCommand(object? @object, IEnumerable<string>? spans = null)
-    {
-        Object = @object;
-        Spans = spans ?? Enumerable.Empty<string>();
-    }
-
-
+    /// <summary>
+    ///     The object to send to the remote mediator.
+    /// </summary>
     [JsonConverter(typeof(ObjectPropertyJsonConverter))]
-    public object? Object { get; }
+    public object? Object { get; } = @object;
 
-    public IEnumerable<string>? Spans { get; }
+    public string ProtocolName { get; } = protocolName;
+
+    /// <summary>
+    ///     A list of roles to send to the remote mediator.
+    /// </summary>
+    public IEnumerable<string>? Spans { get; } = spans ?? Enumerable.Empty<string>();
 }
 
-public class RemoteMediatorStreamResult
+/// <summary>
+///     A protocol for receiving a stream response from a remote mediator.
+/// </summary>
+[method: JsonConstructor]
+public class RemoteMediatorStreamResult(object? @object)
 {
-    [JsonConstructor]
-    public RemoteMediatorStreamResult(object? @object)
-    {
-        Object = @object;
-    }
-
+    /// <summary>
+    ///     The object received from the remote mediator.
+    /// </summary>
     [JsonConverter(typeof(ObjectPropertyJsonConverter))]
-    public object? Object { get; }
+    public object? Object { get; } = @object;
 }

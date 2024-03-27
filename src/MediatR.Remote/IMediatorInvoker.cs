@@ -1,5 +1,8 @@
 namespace MediatR.Remote;
 
+/// <summary>
+/// Defines a mediator invoker.
+/// </summary>
 public interface IMediatorInvoker
 {
     Task<RemoteMediatorResult?> InvokeAsync(RemoteMediatorCommand command,

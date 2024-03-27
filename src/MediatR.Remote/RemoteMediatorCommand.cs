@@ -3,30 +3,36 @@ using MediatR.Remote.Json;
 
 namespace MediatR.Remote;
 
-public class RemoteMediatorCommand : IRequest<RemoteMediatorResult>, INotification
+/// <summary>
+///     A protocol for sending a request to a remote mediator.
+/// </summary>
+[method: JsonConstructor]
+public class RemoteMediatorCommand(object? @object, string protocolName, IEnumerable<string>? spans = null)
+    : IRequest<RemoteMediatorResult>, INotification
 {
-    [JsonConstructor]
-    public RemoteMediatorCommand(object? @object, IEnumerable<string>? spans = null)
-    {
-        Object = @object;
-        Spans = spans ?? Enumerable.Empty<string>();
-    }
-
-
+    /// <summary>
+    ///     <see cref="IMediator" /> command object
+    /// </summary>
     [JsonConverter(typeof(ObjectPropertyJsonConverter))]
-    public object? Object { get; }
+    public object? Object { get; } = @object;
 
-    public IEnumerable<string>? Spans { get; }
+    public string ProtocolName { get; } = protocolName;
+
+    /// <summary>
+    ///     A list of roles to be included in the response.
+    /// </summary>
+    public IEnumerable<string>? Spans { get; } = spans ?? Enumerable.Empty<string>();
 }
 
-public class RemoteMediatorResult
+/// <summary>
+///     A protocol for sending a response from a remote mediator.
+/// </summary>
+[method: JsonConstructor]
+public class RemoteMediatorResult(object? @object)
 {
-    [JsonConstructor]
-    public RemoteMediatorResult(object? @object)
-    {
-        Object = @object;
-    }
-
+    /// <summary>
+    ///     <see cref="IMediator" /> command result object
+    /// </summary>
     [JsonConverter(typeof(ObjectPropertyJsonConverter))]
-    public object? Object { get; }
+    public object? Object { get; } = @object;
 }
