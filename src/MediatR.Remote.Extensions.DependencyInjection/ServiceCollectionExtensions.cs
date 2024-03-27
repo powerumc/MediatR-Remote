@@ -19,11 +19,14 @@ public static class ServiceCollectionExtensions
 
         services.TryAddTransient<IRemoteMediator, RemoteMediator>();
         services.TryAddSingleton<IMediatorInvoker, MediatorInvoker>();
-        services.TryAddTransient(typeof(IRequestHandler<RemoteMediatorCommand, RemoteMediatorResult?>),
+        services.TryAddTransient(
+            typeof(IRequestHandler<RemoteMediatorCommand, RemoteMediatorResult?>), 
             typeof(RemoteMediatorCommandHandler));
-        services.TryAddTransient(typeof(IStreamRequestHandler<RemoteMediatorStreamCommand, RemoteMediatorStreamResult>),
+        services.TryAddTransient(
+            typeof(IStreamRequestHandler<RemoteMediatorStreamCommand, RemoteMediatorStreamResult>),
             typeof(RemoteMediatorStreamCommandHandler));
-        services.TryAddTransient(typeof(INotificationHandler<RemoteMediatorCommand>),
+        services.TryAddTransient(
+            typeof(INotificationHandler<RemoteMediatorCommand>),
             typeof(RemoteMediatorCommandHandler));
         services.TryAddTransient<MediatorRemoteEndpoint>();
         services.Configure<RemoteMediatorOptions>(options =>
