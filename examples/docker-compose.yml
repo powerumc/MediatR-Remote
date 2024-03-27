@@ -6,6 +6,9 @@ services:
     build:
       context: ..
       dockerfile: examples/PublicApi/Dockerfile
+    depends_on:
+      localstack:
+        condition: service_healthy
     ports:
       - "5000:5000"
       - "5001:5001"
@@ -17,6 +20,9 @@ services:
     build:
       context: ..
       dockerfile: examples/InternalApi1/Dockerfile
+    depends_on:
+      localstack:
+        condition: service_healthy
     ports:
       - "5010:5010"
       - "5011:5011"
@@ -28,11 +34,51 @@ services:
     build:
       context: ..
       dockerfile: examples/InternalApi2/Dockerfile
+    depends_on:
+      localstack:
+        condition: service_healthy
     ports:
       - "5020:5020"
       - "5021:5021"
     networks:
       - internal
+  
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    environment:
+      - SERVICES=sqs
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=aaa
+      - AWS_SECRET_ACCESS_KEY=aaa
+      - SQS_ENDPOINT_STRATEGY=off
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      #- ./docker-compose-files/aws-sqs-init.sh:/etc/localstack/init/ready.d/aws-sqs-init.sh
+    ports:
+      - "4566:4566"
+      - "8080:8080"
+    networks:
+      - internal
+
+#  create-aws-resource:
+#    restart: no
+#    image: amazon/aws-cli:2.11.0
+#    depends_on:
+#      aws:
+#        condition: service_healthy
+#    environment:
+#      - AWS_DEFAULT_REGION=us-east-1
+#      - AWS_ACCESS_KEY_ID=aaa
+#      - AWS_SECRET_ACCESS_KEY=aaa
+#    entrypoint: [ "sh", "-c" ]
+#    command: [ "aws --endpoint-url=http://aws:4566 sqs create-queue --queue-name public-api.fifo --attributes FifoQueue=true &&
+#       aws --endpoint-url=http://aws:4566 sqs create-queue --queue-name internal-api2.fifo --attributes FifoQueue=true" ]
+#    networks:
+#      - internal
 
 networks:
   internal:
