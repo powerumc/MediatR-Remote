@@ -4,39 +4,44 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace MediatR.Remote.Extensions.DependencyInjection;
 
 /// <summary>
-/// Extension methods for setting up mediator remote services in an <see cref="IServiceCollection" />.
+///     Extension methods for setting up mediator remote services in an <see cref="IServiceCollection" />.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Add mediator remote services.
+    ///     Add mediator remote services.
     /// </summary>
     /// <param name="services">Service collection</param>
     /// <param name="myRoleName">My role name</param>
-    /// <param name="configure">Configure <see cref="RemoteMediatorBuilder"/></param>
+    /// <param name="configure">Configure <see cref="RemoteMediatorBuilder" /></param>
     /// <returns></returns>
     public static IServiceCollection AddRemoteMediatR(this IServiceCollection services, string myRoleName,
         Action<RemoteMediatorBuilder>? configure = null)
     {
-        return AddRemoteMediatR(services, new[] { myRoleName }, configure);
+        return AddRemoteMediatR<IRemoteMediator>(services, new[] { myRoleName }, configure);
     }
 
     /// <summary>
-    /// Add mediator remote services.
+    ///     Add mediator remote services.
     /// </summary>
     /// <param name="services">Service collection</param>
     /// <param name="myRoleNames">My role name</param>
-    /// <param name="configure">Configure <see cref="RemoteMediatorBuilder"/></param>
-    public static IServiceCollection AddRemoteMediatR(this IServiceCollection services, IEnumerable<string> myRoleNames,
+    /// <param name="configure">Configure <see cref="RemoteMediatorBuilder" /></param>
+    /// <typeparam name="TMediatorInterface">Your custom interface that inherited <see cref="RemoteMediator" /></typeparam>
+    public static IServiceCollection AddRemoteMediatR<TMediatorInterface>(this IServiceCollection services,
+        IEnumerable<string> myRoleNames,
         Action<RemoteMediatorBuilder>? configure = null)
+        where TMediatorInterface : IRemoteMediator
     {
         var builder = new RemoteMediatorBuilder(services);
         configure?.Invoke(builder);
 
-        services.TryAddTransient<IRemoteMediator, RemoteMediator>();
+        services.TryAddTransient(
+            typeof(TMediatorInterface),
+            typeof(RemoteMediator));
         services.TryAddSingleton<IMediatorInvoker, MediatorInvoker>();
         services.TryAddTransient(
-            typeof(IRequestHandler<RemoteMediatorCommand, RemoteMediatorResult?>), 
+            typeof(IRequestHandler<RemoteMediatorCommand, RemoteMediatorResult?>),
             typeof(RemoteMediatorCommandHandler));
         services.TryAddTransient(
             typeof(IStreamRequestHandler<RemoteMediatorStreamCommand, RemoteMediatorStreamResult>),
