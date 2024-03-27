@@ -50,7 +50,7 @@ public class QueueMessageProcessor(
     IServiceProvider serviceProvider,
     MediatorRemoteEndpoint endpoint,
     IOptionsMonitor<AwsSqsOptions> sqsOptions,
-    ILogger<QueueListener> logger) : IQueueMessageProcessor
+    ILogger<QueueBackgroundService> logger) : IQueueMessageProcessor
 {
     public async Task CreateQueueIfNotExistsAsync(string roleName, CancellationToken cancellationToken)
     {

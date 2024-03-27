@@ -19,7 +19,7 @@ public static class RemoteMediatorBuilderExtensions
         Action<AwsSqsOptions> configure, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
     {
         builder.AddQueueMessageProcessor<QueueMessageProcessor>();
-        builder.Services.AddHostedService<QueueListener>();
+        builder.Services.AddHostedService<QueueBackgroundService>();
 
         var protocolRoleName = new ProtocolRoleName("aws-sqs", name);
         builder.Add<RemoteAwsSqsStrategy, RemoteAwsSqsStrategy, RemoteAwsSqsStrategy>(protocolRoleName,
