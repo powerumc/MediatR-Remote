@@ -115,6 +115,46 @@ class Test
 }
 ```
 
+## More Communication Strategies
+
+### HTTP
+
+```csharp
+// Configure Service
+services.AddRemoteMediatR("public-api", remoteBuilder =>
+{
+    remoteBuilder.AddHttpStrategy("internal-api1", client => client.BaseAddress = new Uri("http://localhost:5010"));
+});
+
+// Configure Middleware
+app.UseRemoteMediatR(routeBuilder => routeBuilder.MapHttpListener().AllowAnonymous());
+```
+
+### gRPC
+
+Experimental feature
+
+```csharp
+// Define Custom IMediator Interface
+public interface IGrpcMediator : IRemoteMediator;
+
+public class GrpcMediator(IMediator mediator) : RemoteMediator(mediator), IGrpcMediator
+{
+    public override string ProtocolName => "grpc";
+}
+
+
+// Configure Service
+services.AddGrpc();
+services.AddRemoteMediatR<IGrpcMediator, GrpcMediator>("public-api", "grpc", remoteBuilder =>
+{
+    remoteBuilder.AddGrpcStrategy("internal-api1", client => client.Address = new Uri("http://localhost:5011"));
+});
+
+// Configure Middleware
+app.UseRemoteMediatR(applicationBuilder => applicationBuilder.UseGrpcListener());
+```
+
 ## More Examples
 
-* [HTTP Message Communication Example](examples/http)
+* [Message Communication Example](examples)
