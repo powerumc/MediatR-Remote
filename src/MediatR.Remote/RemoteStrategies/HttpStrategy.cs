@@ -74,7 +74,7 @@ public class RemoteHttpStrategy : IRemoteStrategy
             DefaultBufferSize = 1
         };
         var asyncEnumerable = JsonSerializer.DeserializeAsyncEnumerable<RemoteMediatorStreamResult?>(stream,
-            newOptions, cancellationToken).WithCancellation(cancellationToken);
+            newOptions, cancellationToken);
 
         await foreach (var item in asyncEnumerable)
         {
