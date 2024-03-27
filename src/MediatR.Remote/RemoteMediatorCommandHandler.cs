@@ -35,7 +35,7 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
         return HandleInternalAsync(request, cancellationToken);
     }
 
-    public async Task<RemoteMediatorResult?> HandleInternalAsync(RemoteMediatorCommand request,
+    private async Task<RemoteMediatorResult?> HandleInternalAsync(RemoteMediatorCommand request,
         CancellationToken cancellationToken)
     {
         _ = request ?? throw new ArgumentNullException(nameof(request));
@@ -72,27 +72,18 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
         return remoteResult;
     }
 
-    private Task<RemoteMediatorResult?> InvokeRemoteAsync(IServiceProvider serviceProvider,
+    private static Task<RemoteMediatorResult?> InvokeRemoteAsync(IServiceProvider serviceProvider,
         IEnumerable<string> myRoleNames, string targetRoleName, IEnumerable<string> nextSpans,
         RemoteMediatorCommand command, StrategyTypes strategyTypes, CancellationToken cancellationToken)
     {
-        IRemoteStrategy remoteStrategy;
-
-        switch (command.Object)
+        var remoteStrategy = command.Object switch
         {
-            case IRemoteRequest:
-                remoteStrategy = (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.RequestStrategyType);
-                break;
-
-            case IRemoteNotification:
-                remoteStrategy =
-                    (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.NotificationStrategyType);
-                break;
-
-            default:
-                throw new InvalidOperationException(
-                    $"MediatorRemote is supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}");
-        }
+            IRemoteRequest => (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.RequestStrategyType),
+            IRemoteNotification => 
+                (IRemoteStrategy)serviceProvider.GetRequiredService(strategyTypes.NotificationStrategyType),
+            _ => throw new InvalidOperationException(
+                $"MediatorRemote is supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}")
+        };
 
         return remoteStrategy.InvokeAsync(myRoleNames, targetRoleName, nextSpans, command, cancellationToken);
     }
