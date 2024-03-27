@@ -21,7 +21,7 @@ dotnet add package MediatR.Remote
 
 ## 시작하기
 
-1. **메시지 정의**
+### 1. 메시지 정의
 
 `IRemoteRequest` 인터페이스를 메시지 클래스에 구현합니다.
 또는 `IRemoteNotification`, `IRemoteStreamRequest` 인터페이스 구현이 필요합니다.
@@ -50,11 +50,11 @@ public class HelloResponse
 }
 ```
 
-2. **서비스 구성하기**
+### 2. 서비스 구성하기
 
 `AddRemoteMediatR()` 메서드를 통해 현재 실행하는 서비스의 역할(Role) 을 정의합니다.
 
-만약 한 서비스에 모든 역할을 하나의 In-Process 에서 동작하려면 `builder.Services.AddRemoteMediatR(new[] {"public-api", "internal-api1", "internal-api2"}, ...`); 과 같이 서비스의 역할을 정의하면 됩니다.
+만약 한 서비스에 모든 역할을 하나의 In-Process 에서 동작하려면 `builder.Services.AddRemoteMediatR(new[] {"public-api", "internal-api1", "internal-api2"}, ...);` 과 같이 서비스의 역할을 정의하면 됩니다.
 
 ```csharp
 builder.Services.AddMediatR(/* ..생략.. */);
@@ -66,13 +66,13 @@ builder.Services.AddRemoteMediatR("public-api", remoteBuilder =>
 });
 ```
 
-3. **Middleware 적용하기**
+### 3. Middleware 적용하기
 
 ```csharp
 app.UseRouting();      // <-- Routing 미들웨어가 필수로 필요함
 app.UseMediatRemote();
 ```
 
-## 예제
+### 4. 예제
 
 * [HTTP 메시지 통신 예제](examples/http)
