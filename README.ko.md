@@ -73,7 +73,7 @@ builder.Services.AddRemoteMediatR("public-api", remoteBuilder =>
 
 ```csharp
 app.UseRouting();      // <-- Routing 미들웨어가 필수로 필요함
-app.UseMediatRemote();
+app.UseRemoteMediatR(mediatorApplicationBuilder => mediatorApplicationBuilder.UseHttpListener());
 ```
 
 ### 4. 메시지 전송
