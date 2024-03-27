@@ -26,6 +26,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseRouting();
-app.UseMediatRemote();
+app.UseMediatRemote(builder => builder.UseHttpListener());
 
 app.Run();
