@@ -6,10 +6,10 @@ namespace MediatR.Remote;
 
 public class RemoteMediatorBuilder(IServiceCollection services)
 {
-    internal readonly IServiceCollection Services = services;
-
     internal readonly IDictionary<ProtocolRoleName, StrategyTypes> Strategies =
         new Dictionary<ProtocolRoleName, StrategyTypes>();
+
+    public IServiceCollection Services => services;
 
     /// <summary>
     ///     Json serializer options
