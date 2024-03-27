@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">Service collection</param>
     /// <param name="myRoleName">My role name</param>
+    /// <param name="protocolName">Protocol name</param>
     /// <param name="configure">Configure <see cref="RemoteMediatorBuilder" /></param>
     /// <returns></returns>
     public static IServiceCollection AddRemoteMediatR<TMediatorInterface, TMediatorImpl>(
@@ -45,6 +46,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">Service collection</param>
     /// <param name="myRoleNames">My role name</param>
+    /// <param name="protocolName">Protocol name</param>
     /// <param name="configure">Configure <see cref="RemoteMediatorBuilder" /></param>
     /// <typeparam name="TMediatorInterface">Your custom interface that inherited <see cref="RemoteMediator" /></typeparam>
     /// <typeparam name="TMediatorImpl">Your custom implementation that inherited</typeparam>
