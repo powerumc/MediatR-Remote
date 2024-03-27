@@ -72,8 +72,6 @@ internal class MediatorRemoteEndpoint
                 var count = 0;
                 await foreach (var item in stream)
                 {
-                    Console.WriteLine(JsonSerializer.Serialize(item, jsonSerializerOptions));
-
                     if (count != 0)
                     {
                         await httpContext.Response.WriteAsync(",", Encoding.UTF8);
