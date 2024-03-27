@@ -11,7 +11,11 @@ var services = builder.Services;
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.AddHttpLogging(options => options.LoggingFields = HttpLoggingFields.All);
+services.AddHttpLogging(options =>
+{
+    options.LoggingFields = HttpLoggingFields.All;
+    options.MediaTypeOptions.AddText("application/json");
+});
 services.Configure<KestrelServerOptions>(options =>
 {
     options.ListenLocalhost(5010, listenOptions => listenOptions.Protocols = HttpProtocols.Http1);
@@ -32,7 +36,7 @@ services.AddRemoteMediatR<IGrpcMediator, GrpcMediator>("internal-api1", "grpc", 
 });
 
 var app = builder.Build();
-
+app.UseHttpLogging();
 app.UseAuthorization();
 app.MapControllers();
 

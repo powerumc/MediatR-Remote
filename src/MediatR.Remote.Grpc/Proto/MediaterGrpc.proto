@@ -9,7 +9,7 @@ package MediatR.Remote.Grpc;
 service MediatorGrpc {
   rpc GrpcCommandService (GrpcCommandRequest) returns (GrpcCommandResult);
   rpc GrpcNotificationService (GrpcNotificationRequest) returns (google.protobuf.Empty);
-  rpc GrpcStreamService (GrpcCommandRequest) returns (stream GrpcCommandResult);
+  rpc GrpcStreamService (GrpcStreamCommandRequest) returns (stream GrpcStreamCommandResult);
 }
 
 message GrpcCommandRequest {
@@ -23,6 +23,16 @@ message GrpcCommandResult {
 }
 
 message GrpcNotificationRequest {
+  string Type = 1;
+  string Object = 2;
+}
+
+message GrpcStreamCommandRequest {
+  string Type = 1;
+  string Object = 2;
+}
+
+message GrpcStreamCommandResult {
   string Type = 1;
   string Object = 2;
 }

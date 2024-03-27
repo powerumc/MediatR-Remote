@@ -18,6 +18,11 @@ public class RemoteMediatorOptions
     public string MediatorRemoteEndpoint { get; set; } = null!;
 
     /// <summary>
+    ///     Stream remote mediator endpoint.
+    /// </summary>
+    public string MediatorStreamRemoteEndpoint { get; set; } = null!;
+
+    /// <summary>
     ///     Remote mediator communication strategy.
     /// </summary>
     public IDictionary<ProtocolRoleName, StrategyTypes> RemoteStrategies { get; set; } = null!;

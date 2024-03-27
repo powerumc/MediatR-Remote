@@ -80,6 +80,7 @@ public static class ServiceCollectionExtensions
             options.ProtocolName = protocolName;
             options.MyRoleNames = myRoleNames.ToList().AsReadOnly();
             options.MediatorRemoteEndpoint = RemoteMediatorBuilder.MediatorRemoteEndpoint;
+            options.MediatorStreamRemoteEndpoint = RemoteMediatorBuilder.MediatorStreamRemoteEndpoint;
             options.RemoteStrategies = builder.Strategies;
             options.JsonSerializerOptions = builder.JsonSerializerOptions;
         });

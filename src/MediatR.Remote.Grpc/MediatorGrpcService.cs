@@ -28,9 +28,17 @@ public class MediatorGrpcService(MediatorRemoteEndpoint endpoint) : MediatorGrpc
         return new Empty();
     }
 
-    public override Task GrpcStreamService(GrpcCommandRequest request,
-        IServerStreamWriter<GrpcCommandResult> responseStream, ServerCallContext context)
+    public override async Task GrpcStreamService(GrpcStreamCommandRequest request,
+        IServerStreamWriter<GrpcStreamCommandResult> responseStream, ServerCallContext context)
     {
-        return base.GrpcStreamService(request, responseStream, context);
+        var command = JsonSerializer.Deserialize<RemoteMediatorStreamCommand>(request.Object)!;
+        var results = endpoint.InvokeStreamAsync(command, context.CancellationToken);
+
+        await foreach (var result in results)
+        {
+            var grpcResult =
+                new GrpcStreamCommandResult { Type = request.Type, Object = JsonSerializer.Serialize(result) };
+            await responseStream.WriteAsync(grpcResult, context.CancellationToken);
+        }
     }
 }

@@ -26,7 +26,7 @@ services.AddGrpc();
 services.AddRemoteMediatR<IGrpcMediator, GrpcMediator>("internal-api2", "grpc");
 
 var app = builder.Build();
-
+app.UseHttpLogging();
 app.UseAuthorization();
 app.MapControllers();
 

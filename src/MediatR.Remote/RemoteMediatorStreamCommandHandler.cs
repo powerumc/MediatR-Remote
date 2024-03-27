@@ -26,7 +26,7 @@ internal class RemoteMediatorStreamCommandHandler(
             return mediatorInvoker.InvokeStreamAsync(request, cancellationToken);
         }
 
-        var options = remoteMediatorOptions.CurrentValue;
+        var options = remoteMediatorOptions.Get(request.ProtocolName);
         var myRoleNames = options.MyRoleNames;
         var requestSpans = request.Spans;
         var protocolName = request.ProtocolName;
@@ -54,7 +54,8 @@ internal class RemoteMediatorStreamCommandHandler(
         return remoteResult;
     }
 
-    private IAsyncEnumerable<RemoteMediatorStreamResult?> InvokeRemoteStreamAsync(IServiceProvider serviceProvider,
+    private static IAsyncEnumerable<RemoteMediatorStreamResult?> InvokeRemoteStreamAsync(
+        IServiceProvider serviceProvider,
         IEnumerable<string> myRoleNames, string targetRoleName, IEnumerable<string> nextSpans,
         RemoteMediatorStreamCommand command, StrategyTypes strategyTypes, CancellationToken cancellationToken)
     {
