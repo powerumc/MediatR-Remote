@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Mime;
 using System.Text.Json;
 
 namespace MediatR.Remote.Extensions.DependencyInjection;
@@ -17,8 +18,9 @@ public class ResultAsyncEnumerable<T>(
 
     public async Task ExecuteStream(HttpResponse response, CancellationToken cancellationToken = default)
     {
-        response.ContentType = "application/json";
+        response.ContentType = MediaTypeNames.Application.Json;
         response.StatusCode = StatusCodes.Status200OK;
+
         await response.WriteAsync("[", cancellationToken);
 
         var count = 0;

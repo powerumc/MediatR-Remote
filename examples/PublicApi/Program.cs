@@ -29,8 +29,7 @@ services.AddRemoteMediatR("public-api", remoteBuilder =>
 services.AddGrpc();
 services.AddRemoteMediatR<IGrpcMediator, GrpcMediator>("public-api", "grpc", remoteBuilder =>
 {
-    remoteBuilder.AddGrpcStrategy("internal-api1", client => client.Address = new Uri("http://localhost:5011")
-    );
+    remoteBuilder.AddGrpcStrategy("internal-api1", client => client.Address = new Uri("http://localhost:5011"));
 });
 
 var app = builder.Build();

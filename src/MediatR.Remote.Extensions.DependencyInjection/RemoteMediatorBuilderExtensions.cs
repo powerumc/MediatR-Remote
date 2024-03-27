@@ -1,12 +1,43 @@
+using System.Text.Json;
 using MediatR.Remote.RemoteStrategies;
 
 namespace MediatR.Remote.Extensions.DependencyInjection;
+
+public interface IRemoteJsonSerializer
+{
+    string Serialize<T>(T value) where T : IRemoteRequest;
+    T? Deserialize<T>(string value) where T : IRemoteRequest;
+}
+
+public class RemoteJsonSerializer(JsonSerializerOptions? jsonSerializerOptions) : IRemoteJsonSerializer
+{
+    public string Serialize<T>(T value) where T : IRemoteRequest
+    {
+        return JsonSerializer.Serialize(value, jsonSerializerOptions);
+    }
+
+    public T? Deserialize<T>(string value) where T : IRemoteRequest
+    {
+        return JsonSerializer.Deserialize<T>(value, jsonSerializerOptions);
+    }
+}
 
 /// <summary>
 ///     Extensions HTTP remote mediator for <see cref="RemoteMediatorBuilder" />.
 /// </summary>
 public static class RemoteMediatorBuilderExtensions
 {
+    public static RemoteMediatorBuilder AddJsonSerializer(this RemoteMediatorBuilder builder,
+        Action<JsonSerializerOptions> configure)
+    {
+        var jsonSerializerOptions = new JsonSerializerOptions();
+        configure(jsonSerializerOptions);
+
+        builder.Services.AddSingleton<IRemoteJsonSerializer>(new RemoteJsonSerializer(jsonSerializerOptions));
+
+        return builder;
+    }
+
     /// <summary>
     ///     Add HTTP remote mediator.
     /// </summary>

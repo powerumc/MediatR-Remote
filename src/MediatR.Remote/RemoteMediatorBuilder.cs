@@ -64,7 +64,7 @@ public class RemoteMediatorBuilder(IServiceCollection services)
     internal static string MediatorRemoteEndpoint => "mediator-remote";
 
     /// <summary>
-    ///     Stream default HTTP endpoint
+    ///     Default streaming HTTP endpoint
     /// </summary>
     internal static string MediatorStreamRemoteEndpoint => "mediator-stream-remote";
 
@@ -78,7 +78,7 @@ public class RemoteMediatorBuilder(IServiceCollection services)
     /// <summary>
     ///     Add a strategy with the specified name.
     /// </summary>
-    /// <param name="name">Role name</param>
+    /// <param name="protocolRoleName">Protocol and role name</param>
     /// <param name="serviceLifetime">Service lifetime</param>
     /// <typeparam name="TRequestStrategy">Request object strategy</typeparam>
     /// <typeparam name="TNotificationStrategy">Notification object strategy</typeparam>

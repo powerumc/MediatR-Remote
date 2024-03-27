@@ -27,10 +27,7 @@ public static class RemoteMediatorApplicationBuilderExtensions
                     CancellationToken cancellationToken) =>
                 {
                     var jsonSerializerOptions = options.JsonSerializerOptions;
-                    var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions);
-                    ArgumentNullException.ThrowIfNull(command);
-
-                    var result = await endpoint.InvokeAsync(command, cancellationToken);
+                    var result = await InvokeAsync(jsonObject, jsonSerializerOptions, endpoint, cancellationToken);
                     return Results.Json(result, jsonSerializerOptions);
                 });
 
@@ -41,10 +38,7 @@ public static class RemoteMediatorApplicationBuilderExtensions
                 CancellationToken cancellationToken) =>
             {
                 var jsonSerializerOptions = options.JsonSerializerOptions;
-                var command = jsonObject.Deserialize<RemoteMediatorStreamCommand>(jsonSerializerOptions);
-                ArgumentNullException.ThrowIfNull(command);
-
-                var result = endpoint.InvokeStreamAsync(command, cancellationToken);
+                var result = InvokeStreamAsync(jsonObject, jsonSerializerOptions, endpoint, cancellationToken);
                 await new ResultAsyncEnumerable<RemoteMediatorStreamResult>(result, jsonSerializerOptions)
                     .ExecuteStream(context.Response, cancellationToken);
             });
@@ -67,10 +61,7 @@ public static class RemoteMediatorApplicationBuilderExtensions
             CancellationToken cancellationToken) =>
         {
             var jsonSerializerOptions = options.JsonSerializerOptions;
-            var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions);
-            ArgumentNullException.ThrowIfNull(command);
-
-            var result = await endpoint.InvokeAsync(command, cancellationToken);
+            var result = await InvokeAsync(jsonObject, jsonSerializerOptions, endpoint, cancellationToken);
             return Results.Json(result, jsonSerializerOptions);
         });
 
@@ -81,12 +72,31 @@ public static class RemoteMediatorApplicationBuilderExtensions
             CancellationToken cancellationToken) =>
         {
             var jsonSerializerOptions = options.JsonSerializerOptions;
-            var command = jsonObject.Deserialize<RemoteMediatorStreamCommand>(jsonSerializerOptions);
-            ArgumentNullException.ThrowIfNull(command);
-
-            var result = endpoint.InvokeStreamAsync(command, cancellationToken);
+            var result = InvokeStreamAsync(jsonObject, jsonSerializerOptions, endpoint, cancellationToken);
             await new ResultAsyncEnumerable<RemoteMediatorStreamResult>(result, jsonSerializerOptions)
                 .ExecuteStream(context.Response, cancellationToken);
         });
+    }
+
+    private static async Task<RemoteMediatorResult> InvokeAsync(JsonObject jsonObject,
+        JsonSerializerOptions jsonSerializerOptions,
+        MediatorRemoteEndpoint endpoint, CancellationToken cancellationToken)
+    {
+        var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions);
+        ArgumentNullException.ThrowIfNull(command);
+
+        var result = await endpoint.InvokeAsync(command, cancellationToken);
+        return result;
+    }
+
+    private static IAsyncEnumerable<RemoteMediatorStreamResult> InvokeStreamAsync(JsonObject jsonObject,
+        JsonSerializerOptions jsonSerializerOptions,
+        MediatorRemoteEndpoint endpoint, CancellationToken cancellationToken)
+    {
+        var command = jsonObject.Deserialize<RemoteMediatorStreamCommand>(jsonSerializerOptions);
+        ArgumentNullException.ThrowIfNull(command);
+
+        var result = endpoint.InvokeStreamAsync(command, cancellationToken);
+        return result;
     }
 }
