@@ -2,7 +2,7 @@ using Grpc.Net.ClientFactory;
 using MediatR.Remote.Grpc.RemoteStrategies;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MediatR.Remote.Grpc.Endpoints;
+namespace MediatR.Remote.Grpc;
 
 /// <summary>
 ///     Extensions Grpc remote mediator for <see cref="RemoteMediatorBuilder" />.
@@ -19,8 +19,8 @@ public static class RemoteMediatorBuilderExtensions
     public static RemoteMediatorBuilder AddGrpcStrategy(this RemoteMediatorBuilder builder, string name,
         Action<GrpcClientFactoryOptions> configureClient, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
     {
-        builder.Add<RemoteGrpcStrategy, RemoteGrpcStrategy, RemoteGrpcStrategy>(name, serviceLifetime);
-        builder.Services.AddGrpcClient<MediatorGrpc.MediatorGrpcClient>(name, configureClient);
+        builder.Add<RemoteGrpcStrategy, RemoteGrpcStrategy, RemoteGrpcStrategy>(name + "_grpc", serviceLifetime);
+        builder.Services.AddGrpcClient<MediatorGrpc.MediatorGrpcClient>(name + "_grpc", configureClient);
 
         return builder;
     }
