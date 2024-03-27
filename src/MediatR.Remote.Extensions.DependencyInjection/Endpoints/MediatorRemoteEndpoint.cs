@@ -27,12 +27,6 @@ internal class MediatorRemoteEndpoint
         var jsonSerializerOptions = options.JsonSerializerOptions;
         var myRoleNames = options.MyRoleNames;
 
-        if (!myRoleNames.Any(o => options.RemoteStrategies.ContainsKey(o)))
-        {
-            throw new InvalidOperationException(
-                $"'{string.Join(',', myRoleNames)}' is not contains the remote strategies.");
-        }
-
         var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions)
                       ?? throw new InvalidOperationException(
                           $"Deserialized {nameof(RemoteMediatorCommand)} value must be not null.");
