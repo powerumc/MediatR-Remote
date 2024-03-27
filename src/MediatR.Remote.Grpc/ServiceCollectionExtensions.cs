@@ -1,4 +1,4 @@
-using MediatR.Remote.Grpc.Endpoints;
+using MediatR.Remote.Extensions.DependencyInjection.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -14,10 +14,10 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">Service collection</param>
     /// <param name="myRoleName">My role name</param>
-    /// <param name="configure">Configure <see cref="RemoteMediatorGrpcBuilder" /></param>
+    /// <param name="configure">Configure <see cref="RemoteMediatorBuilder" /></param>
     /// <returns></returns>
     public static IServiceCollection AddRemoteGrpcMediatR(this IServiceCollection services, string myRoleName,
-        Action<RemoteMediatorGrpcBuilder>? configure = null)
+        Action<RemoteMediatorBuilder>? configure = null)
     {
         return AddRemoteGrpcMediatR<IRemoteMediator>(services, new[] { myRoleName }, configure);
     }
@@ -27,14 +27,14 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">Service collection</param>
     /// <param name="myRoleNames">My role name</param>
-    /// <param name="configure">Configure <see cref="RemoteMediatorGrpcBuilder" /></param>
+    /// <param name="configure">Configure <see cref="RemoteMediatorBuilder" /></param>
     /// <typeparam name="TMediatorInterface">Your custom interface that inherited <see cref="RemoteMediator" /></typeparam>
     public static IServiceCollection AddRemoteGrpcMediatR<TMediatorInterface>(this IServiceCollection services,
         IEnumerable<string> myRoleNames,
-        Action<RemoteMediatorGrpcBuilder>? configure = null)
+        Action<RemoteMediatorBuilder>? configure = null)
         where TMediatorInterface : IRemoteMediator
     {
-        var builder = new RemoteMediatorGrpcBuilder(services);
+        var builder = new RemoteMediatorBuilder(services);
         configure?.Invoke(builder);
 
         services.AddGrpc();

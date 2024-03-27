@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using MediatR.Remote.Extensions.DependencyInjection.Endpoints;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,22 @@ public static class RemoteMediatorApplicationBuilderExtensions
     public static RemoteMediatorApplicationBuilder UseHttpListener(this RemoteMediatorApplicationBuilder builder)
     {
         var serviceProvider = builder.WebApplication.Services;
-        var remoteMediatorOptions = serviceProvider.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
 
         builder.WebApplication.UseEndpoints(endpointRouteBuilder =>
         {
-            endpointRouteBuilder.MapPost(remoteMediatorOptions.MediatorRemoteEndpoint,
-                ([FromServices] MediatorRemoteEndpoint endpoint,
-                    HttpContext httpContext,
-                    JsonObject jsonObject) => endpoint.InvokeAsync(httpContext, jsonObject));
+            var options = serviceProvider.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
+            endpointRouteBuilder.MapPost(options.MediatorRemoteEndpoint,
+                async (
+                    [FromServices] MediatorRemoteEndpoint endpoint,
+                    [FromBody] JsonObject jsonObject) =>
+                {
+                    var jsonSerializerOptions = options.JsonSerializerOptions;
+                    var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions);
+                    ArgumentNullException.ThrowIfNull(command);
+
+                    var result = await endpoint.InvokeAsync(command);
+                    return Results.Json(result, jsonSerializerOptions);
+                });
         });
 
         return builder;
@@ -36,8 +45,16 @@ public static class RemoteMediatorApplicationBuilderExtensions
     {
         var routeBuilder = builder.EndpointRouteBuilder;
         var options = routeBuilder.ServiceProvider.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
-        return routeBuilder.MapPost(options.MediatorRemoteEndpoint, ([FromServices] MediatorRemoteEndpoint endpoint,
-            HttpContext httpContext,
-            JsonObject jsonObject) => endpoint.InvokeAsync(httpContext, jsonObject));
+        return routeBuilder.MapPost(options.MediatorRemoteEndpoint, async (
+            [FromServices] MediatorRemoteEndpoint endpoint,
+            JsonObject jsonObject) =>
+        {
+            var jsonSerializerOptions = options.JsonSerializerOptions;
+            var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions);
+            ArgumentNullException.ThrowIfNull(command);
+
+            var result = await endpoint.InvokeAsync(command);
+            return Results.Json(result, jsonSerializerOptions);
+        });
     }
 }

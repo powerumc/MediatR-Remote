@@ -16,7 +16,7 @@ public static class RemoteMediatorBuilderExtensions
     /// <param name="name">Role name</param>
     /// <param name="configureClient">Configure <see cref="HttpClient" /></param>
     /// <param name="serviceLifetime">Service lifetime</param>
-    public static RemoteMediatorGrpcBuilder AddGrpcStrategy(this RemoteMediatorGrpcBuilder builder, string name,
+    public static RemoteMediatorBuilder AddGrpcStrategy(this RemoteMediatorBuilder builder, string name,
         Action<GrpcClientFactoryOptions> configureClient, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
     {
         builder.Add<RemoteGrpcStrategy, RemoteGrpcStrategy, RemoteGrpcStrategy>(name, serviceLifetime);
