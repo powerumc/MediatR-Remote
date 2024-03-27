@@ -19,6 +19,8 @@ services.Configure<KestrelServerOptions>(options =>
 
 var assemblies = new[] { Assembly.GetExecutingAssembly(), typeof(HelloRemoteRequest).Assembly };
 services.AddMediatR(serviceConfiguration => serviceConfiguration.RegisterServicesFromAssemblies(assemblies));
+
+// Configure HTTP
 services.AddRemoteMediatR("internal-api1", remoteBuilder =>
 {
     foreach (var section in builder.Configuration.GetRequiredSection("http").GetChildren())
@@ -27,6 +29,7 @@ services.AddRemoteMediatR("internal-api1", remoteBuilder =>
     }
 });
 
+// Configure gRPC
 services.AddGrpc();
 services.AddRemoteMediatR<IGrpcMediator, GrpcMediator>("internal-api1", "grpc", remoteBuilder =>
 {
