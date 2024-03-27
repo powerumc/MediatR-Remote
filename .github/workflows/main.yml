@@ -25,6 +25,7 @@ jobs:
       with:
         versionSpec: '5.x'
     - run: |
+        gitversion /showvariable FullSemVer
         dotnet pack src/MediatR.Remote -c Release
         dotnet pack src/MediatR.Remote.Extensions.DependencyInjection -c Release
     - name: Publish the package to nuget.org
