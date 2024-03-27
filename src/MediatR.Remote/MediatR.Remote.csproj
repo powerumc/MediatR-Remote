@@ -1,21 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <LangVersion>default</LangVersion>
-        <TargetFramework>netstandard2.1</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>default</LangVersion>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="MediatR" Version="10.0.1" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-      <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
-      <PackageReference Include="System.Text.Json" Version="6.0.5" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MediatR" Version="10.0.1"/>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0"/>
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.0"/>
+    <PackageReference Include="System.Text.Json" Version="6.0.5"/>
+  </ItemGroup>
 
 </Project>
