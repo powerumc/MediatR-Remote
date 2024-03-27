@@ -8,6 +8,9 @@ using Microsoft.Extensions.Options;
 
 namespace MediatR.Remote.RemoteStrategies;
 
+/// <summary>
+/// A remote strategy that uses HTTP to send the request to the target role.
+/// </summary>
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class RemoteHttpStrategy : IRemoteStrategy
 {
@@ -21,6 +24,17 @@ public class RemoteHttpStrategy : IRemoteStrategy
         _remoteMediatorOptions = remoteMediatorOptions;
     }
 
+    /// <summary>
+    /// Invokes command the remote mediator.
+    /// </summary>
+    /// <param name="myRoleNames">My role name</param>
+    /// <param name="targetRoleName">Target role name</param>
+    /// <param name="nextSpans">Next role names</param>
+    /// <param name="command">Remote mediator command object</param>
+    /// <param name="cancellationToken">CancellationToken object</param>
+    /// <returns>Invoked command result</returns>
+    /// <exception cref="ArgumentNullException">If any parameters is null</exception>
+    /// <exception cref="InvalidOperationException">If <param name="command"> is not <see cref="IRemoteRequest"/> or <see cref="IRemoteNotification"/></param></exception>
     public async Task<RemoteMediatorResult?> InvokeAsync(IEnumerable<string> myRoleNames, string targetRoleName,
         IEnumerable<string> nextSpans, RemoteMediatorCommand command, CancellationToken cancellationToken = default)
     {
@@ -51,6 +65,16 @@ public class RemoteHttpStrategy : IRemoteStrategy
         }
     }
 
+    /// <summary>
+    /// Invokes stream the remote mediator.
+    /// </summary>
+    /// <param name="myRoleNames">My role name</param>
+    /// <param name="targetRoleName">Target role name</param>
+    /// <param name="nextSpans">Next role names.</param>
+    /// <param name="command">Remote mediator stream object</param>
+    /// <param name="cancellationToken">CancellationToken object</param>
+    /// <returns>Invoked stream result</returns>
+    /// <exception cref="ArgumentNullException">If any parameters is null</exception>
     public async IAsyncEnumerable<RemoteMediatorStreamResult?> InvokeStreamAsync(IEnumerable<string> myRoleNames,
         string targetRoleName, IEnumerable<string> nextSpans, RemoteMediatorStreamCommand command,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)

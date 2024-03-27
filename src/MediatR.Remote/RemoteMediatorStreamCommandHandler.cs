@@ -4,6 +4,9 @@ using Microsoft.Extensions.Options;
 
 namespace MediatR.Remote;
 
+/// <summary>
+/// A mediator stream handler implementation that can handle remote requests.
+/// </summary>
 internal class RemoteMediatorStreamCommandHandler : RemoteMediatorCommandHandlerBase,
     IStreamRequestHandler<RemoteMediatorStreamCommand, RemoteMediatorStreamResult?>
 {

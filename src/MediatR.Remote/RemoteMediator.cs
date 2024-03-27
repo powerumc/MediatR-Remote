@@ -2,6 +2,9 @@ using System.Runtime.CompilerServices;
 
 namespace MediatR.Remote;
 
+/// <summary>
+/// A mediator implementation that can handle remote requests.
+/// </summary>
 internal class RemoteMediator : IRemoteMediator
 {
     private readonly IMediator _mediator;
