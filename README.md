@@ -3,14 +3,14 @@
 ## What is MediatR.Remote?
 
 The MediatR.Remote library is an extension library of the `IMediatR` implementation that distributes and relays remote objects.
-Inspired by a distributed environment via messages from distributed clustering frameworks such as [Akka.NET](https://getakka.net/) or [Orleans](https://github.com/dotnet/orleans).
+Inspired by distributed clustering frameworks like [Akka.NET](https://getakka.net/) or [Orleans](https://github.com/dotnet/orleans), how to distribute via messages.
 
-Modern software development starts small, but it becomes increasingly complex and must scale at a rapid pace.
+Modern software development starts small, but it becomes more complex and must scale at a rapid pace.
 However, although we always develop with scale expansion in mind, sometimes existing architectures become obstacles in designing new architectures.
 `MediatR.Remote` is a library designed to remote/distribute Mediator Pattern of `IMediator`.
 
 `MediatR.Remote` means the role of each service based on `Role`.
-Each role may be located in one ‘In-Process’ service, or it may be physically distributed,
+Each role may be located in one `In-Process` service, or it may be physically distributed,
 The focus is on shrinking or expanding the structure.
 
 ## Install
@@ -73,6 +73,26 @@ app.UseRouting(); // <-- Routing middleware is required
 app.UseMediatRemote();
 ```
 
-### 4. Examples
+### 4. Send Message
+
+```csharp
+class Test
+{
+    private IRemoteMediator mediator; // or private IMediator mediator;
+
+    public Test(IRemoteMediator mediator)
+    {
+        _mediator = mediator;
+    }
+    
+    public async Task Call()
+    {
+        var request = new HelloRemoteRequest("HELLO WORLD");
+        var response = await _mediator.Send(request);
+    }
+}
+```
+
+## More Examples
 
 * [HTTP Message Communication Example](examples/http)
