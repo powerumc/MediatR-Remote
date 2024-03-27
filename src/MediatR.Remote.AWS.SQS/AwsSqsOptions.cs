@@ -6,17 +6,36 @@ using Amazon.SQS;
 
 namespace MediatR.Remote.AWS.SQS;
 
+/// <summary>
+///     AWS SQS options
+/// </summary>
 public class AwsSqsOptions
 {
+    /// <summary>
+    ///     AWS SQS Client
+    /// </summary>
     public AmazonSQSClient Client { get; set; }
+
+    /// <summary>
+    ///     Queue URL
+    /// </summary>
     public string QueueUrl { get; set; }
 
+    /// <summary>
+    ///     SQS Message GroupId Generator
+    /// </summary>
     public Func<IServiceProvider, RemoteMediatorCommand, string> MessageGroupIdGenerator { get; set; } =
         (_, _) => string.Empty;
 
+    /// <summary>
+    ///     SQS Message DeduplicationId Generator
+    /// </summary>
     public Func<IServiceProvider, RemoteMediatorCommand, string> MessageDeduplicationIdGenerator { get; set; } =
         (_, _) => Guid.NewGuid().ToString();
 
+    /// <summary>
+    ///     When creating a queue, this function will be called to get the attributes to set on the queue
+    /// </summary>
     public Func<IServiceProvider, Dictionary<string, string>> AttributesOnCreateQueue { get; set; } =
         _ => new Dictionary<string, string> { { QueueAttributeName.FifoQueue, "True" } };
 }
