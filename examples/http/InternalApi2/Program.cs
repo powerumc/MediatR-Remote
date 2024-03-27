@@ -5,10 +5,7 @@ using Messages;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -26,6 +23,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseRouting();
-app.UseMediatRemote(builder => builder.UseHttpListener());
+app.UseMediatRemote(mediatorApplicationBuilder => mediatorApplicationBuilder.UseHttpListener());
 
 app.Run();
