@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Runtime.CompilerServices;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace MediatR.Remote.RemoteStrategies;
 
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class RemoteHttpStrategy : IRemoteStrategy
 {
     private readonly IHttpClientFactory _httpClientFactory;
