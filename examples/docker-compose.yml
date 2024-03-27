@@ -56,8 +56,8 @@ services:
       - AWS_SECRET_ACCESS_KEY=aaa
       - SQS_ENDPOINT_STRATEGY=off
     volumes:
-      - ./docker-compose-files/aws-sqs-init.sh:/etc/localstack/init/ready.d/aws-sqs-init.sh
       - /var/run/docker.sock:/var/run/docker.sock
+      #- ./docker-compose-files/aws-sqs-init.sh:/etc/localstack/init/ready.d/aws-sqs-init.sh
     ports:
       - "4566:4566"
       - "8080:8080"

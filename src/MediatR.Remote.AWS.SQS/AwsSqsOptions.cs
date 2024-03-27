@@ -16,4 +16,7 @@ public class AwsSqsOptions
 
     public Func<IServiceProvider, RemoteMediatorCommand, string> MessageDeduplicationIdGenerator { get; set; } =
         (_, _) => Guid.NewGuid().ToString();
+
+    public Func<IServiceProvider, Dictionary<string, string>> AttributesOnCreateQueue { get; set; } =
+        _ => new Dictionary<string, string> { { QueueAttributeName.FifoQueue, "True" } };
 }
