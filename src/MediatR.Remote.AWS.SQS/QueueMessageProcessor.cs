@@ -6,14 +6,42 @@ using Microsoft.Extensions.Options;
 
 namespace MediatR.Remote.AWS.SQS;
 
+/// <summary>
+///     SQS message processor.
+/// </summary>
 public interface IQueueMessageProcessor
 {
+    /// <summary>
+    ///     Create queue if not exists.
+    /// </summary>
+    /// <param name="roleName">Role name</param>
+    /// <param name="cancellationToken">CancellationToken</param>
     Task CreateQueueIfNotExistsAsync(string roleName, CancellationToken cancellationToken);
 
+    /// <summary>
+    ///     Acknowledge message.
+    ///     If message is processed successfully, acknowledge the message.(delete message)
+    /// </summary>
+    /// <param name="options">SQS Options</param>
+    /// <param name="message">SQS Message</param>
+    /// <param name="cancellationToken">CancellationToken</param>
     Task AcknowledgeMessageAsync(AwsSqsOptions options, Message message, CancellationToken cancellationToken);
 
+    /// <summary>
+    ///     Message processing.
+    /// </summary>
+    /// <param name="command">Command</param>
+    /// <param name="cancellationToken">CancellationToken</param>
     Task OnMessageAsync(RemoteMediatorCommand command, CancellationToken cancellationToken);
 
+    /// <summary>
+    ///     Message processing exception.
+    /// </summary>
+    /// <param name="options">SQS Options</param>
+    /// <param name="message">SQS Message</param>
+    /// <param name="exception">Exception</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns></returns>
     Task OnMessageExceptionAsync(AwsSqsOptions options, Message message, Exception exception,
         CancellationToken cancellationToken);
 }
