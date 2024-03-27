@@ -2,7 +2,7 @@
 
 ## MediatR.Remote 는 무엇입니까?
 
-MediatR.Remote 라이브러리는 원격 개체를 분산하여 중계하는 `IMediatR` 구현의 확장 라이브러리 입니다.
+MediatR.Remote 라이브러리는 원격 개체를 분산하여 중계하는 `IMediator` 구현의 확장 라이브러리 입니다.
 [Akka.NET](https://getakka.net/) 또는 [Orleans](https://github.com/dotnet/orleans) 과 같은 분산 클러스터링 프레임워크에서 메시지를 통한 분산 방법에서 영감을 받았습니다.
 
 최근 소프트웨어 개발은 작은 규모로 시작하지만 점점 더 복잡해지고 빠른 속도로 확장해야 합니다. 

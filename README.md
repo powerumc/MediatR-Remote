@@ -2,7 +2,7 @@
 
 ## What is MediatR.Remote?
 
-The MediatR.Remote library is an extension library of the `IMediatR` implementation that distributes and relays remote objects.
+The MediatR.Remote library is an extension library of the `IMediator` implementation that distributes and relays remote objects.
 Inspired by distributed clustering frameworks like [Akka.NET](https://getakka.net/) or [Orleans](https://github.com/dotnet/orleans), how to distribute via messages.
 
 Modern software development starts small, but it becomes more complex and must scale at a rapid pace.
