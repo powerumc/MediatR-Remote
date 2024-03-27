@@ -1,13 +1,14 @@
+using MediatR.Remote.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 
 namespace MediatR.Remote.Grpc;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseRemoteGrpcMediatR(this WebApplication app)
+    public static IApplicationBuilder UseRemoteGrpcMediatR(this RemoteMediatorApplicationBuilder builder)
     {
-        app.MapGrpcService<MediatorGrpcService>();
+        builder.WebApplication.MapGrpcService<MediatorGrpcService>();
 
-        return app;
+        return builder.WebApplication;
     }
 }
