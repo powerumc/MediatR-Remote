@@ -30,6 +30,11 @@ public static class RemoteMediatorBuilderExtensions
         return builder;
     }
 
+    /// <summary>
+    ///     Add queue message processor.
+    /// </summary>
+    /// <param name="builder">A Builder object</param>
+    /// <typeparam name="TMessageProcessor">Custom queue message processor</typeparam>
     public static RemoteMediatorBuilder AddQueueMessageProcessor<TMessageProcessor>(this RemoteMediatorBuilder builder)
         where TMessageProcessor : class, IQueueMessageProcessor
     {

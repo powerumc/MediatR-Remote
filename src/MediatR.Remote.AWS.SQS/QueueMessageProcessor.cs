@@ -46,6 +46,9 @@ public interface IQueueMessageProcessor
         CancellationToken cancellationToken);
 }
 
+/// <summary>
+///     Queue message processor.
+/// </summary>
 public class QueueMessageProcessor(
     IServiceProvider serviceProvider,
     MediatorRemoteEndpoint endpoint,
