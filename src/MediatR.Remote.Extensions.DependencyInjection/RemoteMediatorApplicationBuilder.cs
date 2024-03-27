@@ -9,3 +9,13 @@ public class RemoteMediatorApplicationBuilder
 
     public IApplicationBuilder ApplicationBuilder { get; }
 }
+
+public class RemoteMediatorEndpointRouteBuilder
+{
+    public RemoteMediatorEndpointRouteBuilder(IEndpointRouteBuilder endpointRouteBuilder)
+    {
+        EndpointRouteBuilder = endpointRouteBuilder;
+    }
+
+    public IEndpointRouteBuilder EndpointRouteBuilder { get; }
+}

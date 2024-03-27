@@ -22,4 +22,13 @@ public static class RemoteMediatorApplicationBuilderExtensions
 
         return builder;
     }
+
+    public static RouteHandlerBuilder MapHttpListener(this RemoteMediatorEndpointRouteBuilder builder)
+    {
+        var routeBuilder = builder.EndpointRouteBuilder;
+        var options = routeBuilder.ServiceProvider.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
+        return routeBuilder.MapPost(options.MediatorRemoteEndpoint, ([FromServices] MediatorRemoteEndpoint endpoint,
+            HttpContext httpContext,
+            JsonObject jsonObject) => endpoint.InvokeAsync(httpContext, jsonObject));
+    }
 }
