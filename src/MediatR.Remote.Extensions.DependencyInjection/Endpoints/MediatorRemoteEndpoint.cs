@@ -47,12 +47,12 @@ internal class MediatorRemoteEndpoint
         HttpContext httpContext,
         JsonSerializerOptions jsonSerializerOptions)
     {
+        httpContext.Response.ContentType = MediaTypeNames.Application.Json;
+
         switch (command.Object)
         {
             case IRemoteRequest:
                 var result = await mediator.Send(command);
-
-                httpContext.Response.ContentType = MediaTypeNames.Application.Json;
                 await JsonSerializer.SerializeAsync(httpContext.Response.Body, result, jsonSerializerOptions);
                 break;
 
@@ -61,8 +61,6 @@ internal class MediatorRemoteEndpoint
                 break;
 
             case IRemoteStreamRequest:
-                httpContext.Response.ContentType = MediaTypeNames.Application.Json;
-
                 var streamCommand = new RemoteMediatorStreamCommand(command.Object, command.Spans);
                 var stream = mediator.CreateStream(streamCommand);
 
@@ -72,8 +70,6 @@ internal class MediatorRemoteEndpoint
                 var count = 0;
                 await foreach (var item in stream)
                 {
-                    Console.WriteLine(JsonSerializer.Serialize(item, jsonSerializerOptions));
-
                     if (count != 0)
                     {
                         await httpContext.Response.WriteAsync(",", Encoding.UTF8);
@@ -92,7 +88,7 @@ internal class MediatorRemoteEndpoint
 
             default:
                 throw new InvalidOperationException(
-                    $"MediatorRemote is supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)}");
+                    $"{nameof(IRemoteMediator)} is only supports {nameof(IRemoteRequest)} and {nameof(IRemoteNotification)} and {nameof(IRemoteStreamRequest)}");
         }
     }
 }
