@@ -20,7 +20,7 @@ public class RemoteHttpStrategy(
     protected override async Task<RemoteMediatorResult?> SendInternalAsync(string targetRoleName,
         RemoteMediatorCommand nextCommand, CancellationToken cancellationToken)
     {
-        var httpClientName = ProtocolRoleName.GetNormalizedRoleName(nextCommand.ProtocolName, targetRoleName);
+        var httpClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
         var httpClient = httpClientFactory.CreateClient(httpClientName);
         var options = remoteMediatorOptions.Get(nextCommand.ProtocolName);
         var json = JsonSerializer.Serialize(nextCommand, options.JsonSerializerOptions);
@@ -38,7 +38,7 @@ public class RemoteHttpStrategy(
     protected override async Task NotificationInternalAsync(string targetRoleName,
         RemoteMediatorCommand nextCommand, CancellationToken cancellationToken)
     {
-        var httpClientName = ProtocolRoleName.GetNormalizedRoleName(nextCommand.ProtocolName, targetRoleName);
+        var httpClientName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
         var httpClient = httpClientFactory.CreateClient(httpClientName);
         var options = remoteMediatorOptions.Get(nextCommand.ProtocolName);
         var json = JsonSerializer.Serialize(nextCommand, options.JsonSerializerOptions);
@@ -68,7 +68,7 @@ public class RemoteHttpStrategy(
         _ = command ?? throw new ArgumentNullException(nameof(command));
 
         var options = remoteMediatorOptions.Get(command.ProtocolName);
-        var httpClientName = ProtocolRoleName.GetNormalizedRoleName(command.ProtocolName, targetRoleName);
+        var httpClientName = ProtocolRoleName.Generate(command.ProtocolName, targetRoleName);
         var httpClient = httpClientFactory.CreateClient(httpClientName);
         var newCommand = new RemoteMediatorCommand(command.Object, command.ProtocolName, nextSpans);
         var json = JsonSerializer.Serialize(newCommand, options.JsonSerializerOptions);
