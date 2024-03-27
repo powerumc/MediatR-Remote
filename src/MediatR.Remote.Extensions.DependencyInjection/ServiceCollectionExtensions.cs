@@ -1,3 +1,4 @@
+using MediatR.Remote.Extensions.DependencyInjection.Endpoints;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MediatR.Remote.Extensions.DependencyInjection;
@@ -24,6 +25,7 @@ public static class ServiceCollectionExtensions
             typeof(RemoteMediatorStreamCommandHandler));
         services.TryAddTransient(typeof(INotificationHandler<RemoteMediatorCommand>),
             typeof(RemoteMediatorCommandHandler));
+        services.TryAddTransient<MediatorRemoteEndpoint>();
         services.Configure<RemoteMediatorOptions>(options =>
         {
             options.MyRoleNames = myRoleNames.ToList().AsReadOnly();
