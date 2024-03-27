@@ -17,10 +17,10 @@ public static class RemoteMediatorApplicationBuilderExtensions
     public static RemoteMediatorApplicationBuilder UseHttpListener(this RemoteMediatorApplicationBuilder builder)
     {
         var serviceProvider = builder.WebApplication.Services;
-
         builder.WebApplication.UseEndpoints(endpointRouteBuilder =>
         {
-            var options = serviceProvider.GetRequiredService<IOptions<RemoteMediatorOptions>>().Value;
+            var options = serviceProvider.GetRequiredService<IOptionsMonitor<RemoteMediatorOptions>>()
+                .Get("http");
             endpointRouteBuilder.MapPost(options.MediatorRemoteEndpoint,
                 async (
                     [FromServices] MediatorRemoteEndpoint endpoint,
@@ -45,7 +45,7 @@ public static class RemoteMediatorApplicationBuilderExtensions
     public static RouteHandlerBuilder MapHttpListener(this RemoteMediatorEndpointRouteBuilder builder)
     {
         var routeBuilder = builder.EndpointRouteBuilder;
-        var options = routeBuilder.ServiceProvider.GetRequiredService<IOptionsSnapshot<RemoteMediatorOptions>>()
+        var options = routeBuilder.ServiceProvider.GetRequiredService<IOptionsMonitor<RemoteMediatorOptions>>()
             .Get("http");
         return routeBuilder.MapPost(options.MediatorRemoteEndpoint, async (
             [FromServices] MediatorRemoteEndpoint endpoint,

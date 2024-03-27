@@ -4,11 +4,59 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MediatR.Remote;
 
+public class ProtocolRoleName(string protocolName, string name)
+{
+    public string ProtocolName { get; } = protocolName;
+    public string Name { get; } = name;
+
+    public override string ToString()
+    {
+        return GetNormalizedRoleName(protocolName, name);
+    }
+
+    public static string GetNormalizedRoleName(string protocolName, string name)
+    {
+        return $"{name}_{protocolName}";
+    }
+
+    protected bool Equals(ProtocolRoleName other)
+    {
+        return ProtocolName == other.ProtocolName && Name == other.Name;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj.GetType() != GetType())
+        {
+            return false;
+        }
+
+        return Equals((ProtocolRoleName)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(ProtocolName, Name);
+    }
+}
+
 public class RemoteMediatorBuilder(IServiceCollection services)
 {
     internal readonly JsonSerializerOptions JsonSerializerOptions = new();
     internal readonly IServiceCollection Services = services;
-    internal readonly IDictionary<string, StrategyTypes> Strategies = new Dictionary<string, StrategyTypes>();
+
+    internal readonly IDictionary<ProtocolRoleName, StrategyTypes> Strategies =
+        new Dictionary<ProtocolRoleName, StrategyTypes>();
 
     /// <summary>
     ///     Default HTTP endpoint
@@ -31,13 +79,13 @@ public class RemoteMediatorBuilder(IServiceCollection services)
     /// <typeparam name="TNotificationStrategy">Notification object strategy</typeparam>
     /// <typeparam name="TStreamStrategy">Stream object strategy</typeparam>
     /// <returns></returns>
-    public RemoteMediatorBuilder Add<TRequestStrategy, TNotificationStrategy, TStreamStrategy>(string name,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+    public RemoteMediatorBuilder Add<TRequestStrategy, TNotificationStrategy, TStreamStrategy>(
+        ProtocolRoleName protocolRoleName, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TRequestStrategy : IRemoteStrategy
     {
         var strategyItem = new StrategyTypes(typeof(TRequestStrategy), typeof(TNotificationStrategy),
             typeof(TStreamStrategy));
-        Strategies.Add(name, strategyItem);
+        Strategies.Add(protocolRoleName, strategyItem);
         AddServices(strategyItem, serviceLifetime);
 
         return this;

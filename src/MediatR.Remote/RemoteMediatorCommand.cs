@@ -7,7 +7,7 @@ namespace MediatR.Remote;
 ///     A protocol for sending a request to a remote mediator.
 /// </summary>
 [method: JsonConstructor]
-public class RemoteMediatorCommand(object? @object, IEnumerable<string>? spans = null)
+public class RemoteMediatorCommand(object? @object, string protocolName, IEnumerable<string>? spans = null)
     : IRequest<RemoteMediatorResult>, INotification
 {
     /// <summary>
@@ -15,6 +15,8 @@ public class RemoteMediatorCommand(object? @object, IEnumerable<string>? spans =
     /// </summary>
     [JsonConverter(typeof(ObjectPropertyJsonConverter))]
     public object? Object { get; } = @object;
+
+    public string ProtocolName { get; } = protocolName;
 
     /// <summary>
     ///     A list of roles to be included in the response.

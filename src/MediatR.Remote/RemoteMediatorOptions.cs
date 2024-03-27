@@ -20,7 +20,7 @@ public class RemoteMediatorOptions
     /// <summary>
     ///     Remote mediator communication strategy.
     /// </summary>
-    public IDictionary<string, StrategyTypes> RemoteStrategies { get; set; } = null!;
+    public IDictionary<ProtocolRoleName, StrategyTypes> RemoteStrategies { get; set; } = null!;
 
     /// <summary>
     ///     The <see cref="JsonSerializerOptions" /> to use when serializing and deserializing messages.

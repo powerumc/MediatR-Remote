@@ -13,18 +13,21 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
 {
     private readonly ILogger<RemoteMediatorCommandHandler> _logger;
     private readonly IMediatorInvoker _mediatorInvoker;
-    private readonly IOptionsMonitor<RemoteMediatorOptions> _remoteMediatorOptions;
+    private readonly IOptionsMonitor<RemoteMediatorOptions> _options;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public RemoteMediatorCommandHandler(
-        IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions,
+        IServiceProvider serviceProvider,
         IServiceScopeFactory serviceScopeFactory,
         IMediatorInvoker mediatorInvoker,
+        IOptionsMonitor<RemoteMediatorOptions> options,
         ILogger<RemoteMediatorCommandHandler> logger)
     {
-        _remoteMediatorOptions = remoteMediatorOptions;
+        _serviceProvider = serviceProvider;
         _serviceScopeFactory = serviceScopeFactory;
         _mediatorInvoker = mediatorInvoker;
+        _options = options;
         _logger = logger;
     }
 
@@ -39,7 +42,8 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
         return HandleInternalAsync(request, cancellationToken);
     }
 
-    private async Task<RemoteMediatorResult?> HandleInternalAsync(RemoteMediatorCommand request,
+    private async Task<RemoteMediatorResult?> HandleInternalAsync(
+        RemoteMediatorCommand request,
         CancellationToken cancellationToken)
     {
         _ = request ?? throw new ArgumentNullException(nameof(request));
@@ -50,9 +54,10 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
             return await _mediatorInvoker.InvokeAsync(request, cancellationToken);
         }
 
-        var options = _remoteMediatorOptions.CurrentValue;
+        var options = _options.Get(request.ProtocolName);
         var myRoleNames = options.MyRoleNames;
         var requestSpans = request.Spans;
+        var protocolName = request.ProtocolName;
         var (nextSpans, targetRoleName) = GetNextSpans(remoteCommand, requestSpans, myRoleNames);
 
         if (targetRoleName is null)
@@ -63,13 +68,14 @@ internal class RemoteMediatorCommandHandler : RemoteMediatorCommandHandlerBase,
         using var disposable = _logger.BeginScope(nameof(RemoteMediatorCommandHandler));
         _logger.LogBeginHandler(myRoleNames, targetRoleName, request.Object.GetType().Name);
 
-        if (!options.RemoteStrategies.TryGetValue(targetRoleName, out var remoteStrategyType))
+        var protocolRoleName = new ProtocolRoleName(protocolName, targetRoleName);
+        if (!options.RemoteStrategies.TryGetValue(protocolRoleName, out var remoteStrategyType))
         {
             throw new InvalidOperationException($"'{targetRoleName}' is not contains the remote strategies.");
         }
 
         var serviceProvider = _serviceScopeFactory.CreateScope().ServiceProvider;
-        var command = new RemoteMediatorCommand(request.Object, nextSpans);
+        var command = new RemoteMediatorCommand(request.Object, request.ProtocolName, nextSpans);
         var remoteResult = await InvokeRemoteAsync(serviceProvider, myRoleNames, targetRoleName, nextSpans,
             command, remoteStrategyType, cancellationToken);
 

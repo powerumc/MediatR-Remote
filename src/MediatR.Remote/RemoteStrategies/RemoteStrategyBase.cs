@@ -31,7 +31,7 @@ public abstract class RemoteStrategyBase : IRemoteStrategy
         _ = nextSpans ?? throw new ArgumentNullException(nameof(nextSpans));
         _ = command ?? throw new ArgumentNullException(nameof(command));
 
-        var nextCommand = new RemoteMediatorCommand(command.Object, nextSpans);
+        var nextCommand = new RemoteMediatorCommand(command.Object, command.ProtocolName, nextSpans);
 
         switch (command.Object)
         {
