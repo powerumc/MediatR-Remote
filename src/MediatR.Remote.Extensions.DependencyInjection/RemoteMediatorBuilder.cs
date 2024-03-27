@@ -8,7 +8,7 @@ public class RemoteMediatorBuilder
 {
     internal readonly JsonSerializerOptions JsonSerializerOptions = new();
     internal readonly IServiceCollection Services;
-    internal readonly IDictionary<string, StrategyItem> Strategies = new Dictionary<string, StrategyItem>();
+    internal readonly IDictionary<string, StrategyTypes> Strategies = new Dictionary<string, StrategyTypes>();
 
 
     public RemoteMediatorBuilder(IServiceCollection services)
@@ -36,7 +36,7 @@ public class RemoteMediatorBuilder
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TRequestStrategy : IRemoteStrategy
     {
-        var strategyItem = new StrategyItem(typeof(TRequestStrategy), typeof(TNotificationStrategy),
+        var strategyItem = new StrategyTypes(typeof(TRequestStrategy), typeof(TNotificationStrategy),
             typeof(TStreamStrategy));
         Strategies.Add(name, strategyItem);
         AddServices(strategyItem, serviceLifetime);
@@ -44,14 +44,14 @@ public class RemoteMediatorBuilder
         return this;
     }
 
-    private void AddServices(StrategyItem strategyItem, ServiceLifetime serviceLifetime)
+    private void AddServices(StrategyTypes strategyTypes, ServiceLifetime serviceLifetime)
     {
         Services.TryAdd(ServiceDescriptor.Describe(
-            strategyItem.RequestStrategyType, strategyItem.RequestStrategyType, serviceLifetime));
+            strategyTypes.RequestStrategyType, strategyTypes.RequestStrategyType, serviceLifetime));
         Services.TryAdd(ServiceDescriptor.Describe(
-            strategyItem.NotificationStrategyType, strategyItem.NotificationStrategyType, serviceLifetime));
+            strategyTypes.NotificationStrategyType, strategyTypes.NotificationStrategyType, serviceLifetime));
         Services.TryAdd(ServiceDescriptor.Describe(
-            strategyItem.StreamStrategyType, strategyItem.StreamStrategyType, serviceLifetime));
+            strategyTypes.StreamStrategyType, strategyTypes.StreamStrategyType, serviceLifetime));
     }
 }
 
