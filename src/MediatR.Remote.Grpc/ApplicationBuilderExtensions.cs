@@ -7,7 +7,7 @@ public static class ApplicationBuilderExtensions
 {
     public static IApplicationBuilder UseGrpcListener(this RemoteMediatorApplicationBuilder builder)
     {
-        builder.WebApplication.MapGrpcService<MediatorGrpcService>();
+        builder.WebApplication.MapGrpcService<MediatorGrpcServiceImpl>();
 
         return builder.WebApplication;
     }

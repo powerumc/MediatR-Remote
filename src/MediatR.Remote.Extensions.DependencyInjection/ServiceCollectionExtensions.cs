@@ -59,6 +59,8 @@ public static class ServiceCollectionExtensions
         where TMediatorImpl : TMediatorInterface
     {
         var builder = new RemoteMediatorBuilder(services);
+        builder.Serializer ??= new JsonRemoteSerializer(builder.JsonSerializerOptions);
+
         configure?.Invoke(builder);
 
         services.TryAddTransient(
@@ -83,6 +85,7 @@ public static class ServiceCollectionExtensions
             options.MediatorStreamRemoteEndpoint = RemoteMediatorBuilder.MediatorStreamRemoteEndpoint;
             options.RemoteStrategies = builder.Strategies;
             options.JsonSerializerOptions = builder.JsonSerializerOptions;
+            options.Serializer = builder.Serializer;
         });
 
         return services;

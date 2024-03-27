@@ -1,9 +1,7 @@
 ## Run
 
 ```bash
-dotnet run --project PublicApi
-dotnet run --project InternalApi1
-dotnet run --project InternalApi2
+docker compose up --build
 ```
 
 ## HTTP Tests

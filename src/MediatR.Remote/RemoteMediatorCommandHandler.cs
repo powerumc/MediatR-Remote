@@ -8,7 +8,7 @@ namespace MediatR.Remote;
 ///     A mediator command handler implementation that can handle remote requests.
 /// </summary>
 internal class RemoteMediatorCommandHandler(
-    IServiceScopeFactory serviceScopeFactory,
+    IServiceProvider serviceProvider,
     IMediatorInvoker mediatorInvoker,
     IOptionsMonitor<RemoteMediatorOptions> options,
     ILogger<RemoteMediatorCommandHandler> logger)
@@ -59,7 +59,6 @@ internal class RemoteMediatorCommandHandler(
             throw new InvalidOperationException($"'{targetRoleName}' is not contains the remote strategies.");
         }
 
-        var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         var command = new RemoteMediatorCommand(request.Object, request.ProtocolName, nextSpans);
         var remoteResult = await InvokeRemoteAsync(serviceProvider, myRoleNames, targetRoleName, nextSpans,
             command, remoteStrategyType, cancellationToken);

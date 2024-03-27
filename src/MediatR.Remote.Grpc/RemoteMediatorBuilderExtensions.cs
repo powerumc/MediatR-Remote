@@ -21,7 +21,8 @@ public static class RemoteMediatorBuilderExtensions
     {
         var protocolRoleName = new ProtocolRoleName("grpc", name);
         builder.Add<RemoteGrpcStrategy, RemoteGrpcStrategy, RemoteGrpcStrategy>(protocolRoleName, serviceLifetime);
-        builder.Services.AddGrpcClient<MediatorGrpc.MediatorGrpcClient>(protocolRoleName.ToString(), configureClient);
+        builder.Services.AddGrpcClient<MediatorGrpcService.MediatorGrpcServiceClient>(protocolRoleName.ToString(),
+            configureClient);
 
         return builder;
     }

@@ -7,6 +7,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediatR.Remote.Extensions.DependencyInjection", "src\MediatR.Remote.Extensions.DependencyInjection\MediatR.Remote.Extensions.DependencyInjection.csproj", "{930C85B4-F08B-4E0B-9664-733757617FE2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{2F0817D8-9AC7-4FE0-B5D0-93DE031F5C74}"
+	ProjectSection(SolutionItems) = preProject
+		examples\docker-compose.yml = examples\docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicApi", "examples\PublicApi\PublicApi.csproj", "{0334411C-0D98-4765-A6DB-E3DC3A533CB5}"
 EndProject

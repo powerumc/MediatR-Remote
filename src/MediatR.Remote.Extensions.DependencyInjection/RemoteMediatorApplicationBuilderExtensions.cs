@@ -12,6 +12,37 @@ namespace MediatR.Remote.Extensions.DependencyInjection;
 public static class RemoteMediatorApplicationBuilderExtensions
 {
     /// <summary>
+    ///     Use the mediator remote style of .NET 6 or higher.
+    /// </summary>
+    public static RouteHandlerBuilder MapHttpListener(this RemoteMediatorEndpointRouteBuilder builder)
+    {
+        var routeBuilder = builder.EndpointRouteBuilder;
+        var options = routeBuilder.ServiceProvider.GetRequiredService<IOptionsMonitor<RemoteMediatorOptions>>()
+            .Get("http");
+        routeBuilder.MapPost(options.MediatorRemoteEndpoint, async (
+            [FromServices] MediatorRemoteEndpoint endpoint,
+            JsonObject jsonObject,
+            CancellationToken cancellationToken) =>
+        {
+            var jsonSerializerOptions = options.JsonSerializerOptions;
+            var result = await InvokeAsync(jsonObject, options, endpoint, cancellationToken);
+            return Results.Json(result, jsonSerializerOptions);
+        });
+
+        return routeBuilder.MapPost(options.MediatorStreamRemoteEndpoint, async (
+            [FromServices] MediatorRemoteEndpoint endpoint,
+            [FromBody] JsonObject jsonObject,
+            HttpContext context,
+            CancellationToken cancellationToken) =>
+        {
+            var jsonSerializerOptions = options.JsonSerializerOptions;
+            var result = InvokeStreamAsync(jsonObject, options, endpoint, cancellationToken);
+            await new ResultAsyncEnumerable<RemoteMediatorStreamResult>(result, jsonSerializerOptions)
+                .ExecuteStream(context.Response, cancellationToken);
+        });
+    }
+
+    /// <summary>
     ///     Use the mediator remote style of middleware.
     /// </summary>
     public static RemoteMediatorApplicationBuilder UseHttpListener(this RemoteMediatorApplicationBuilder builder)
@@ -26,9 +57,8 @@ public static class RemoteMediatorApplicationBuilderExtensions
                     [FromBody] JsonObject jsonObject,
                     CancellationToken cancellationToken) =>
                 {
-                    var jsonSerializerOptions = options.JsonSerializerOptions;
-                    var result = await InvokeAsync(jsonObject, jsonSerializerOptions, endpoint, cancellationToken);
-                    return Results.Json(result, jsonSerializerOptions);
+                    var result = await InvokeAsync(jsonObject, options, endpoint, cancellationToken);
+                    return Results.Json(result, options.JsonSerializerOptions);
                 });
 
             endpointRouteBuilder.MapPost(options.MediatorStreamRemoteEndpoint, async (
@@ -38,7 +68,7 @@ public static class RemoteMediatorApplicationBuilderExtensions
                 CancellationToken cancellationToken) =>
             {
                 var jsonSerializerOptions = options.JsonSerializerOptions;
-                var result = InvokeStreamAsync(jsonObject, jsonSerializerOptions, endpoint, cancellationToken);
+                var result = InvokeStreamAsync(jsonObject, options, endpoint, cancellationToken);
                 await new ResultAsyncEnumerable<RemoteMediatorStreamResult>(result, jsonSerializerOptions)
                     .ExecuteStream(context.Response, cancellationToken);
             });
@@ -47,42 +77,11 @@ public static class RemoteMediatorApplicationBuilderExtensions
         return builder;
     }
 
-    /// <summary>
-    ///     Use the mediator remote style of .NET 6 or higher.
-    /// </summary>
-    public static RouteHandlerBuilder MapHttpListener(this RemoteMediatorEndpointRouteBuilder builder)
-    {
-        var routeBuilder = builder.EndpointRouteBuilder;
-        var options = routeBuilder.ServiceProvider.GetRequiredService<IOptionsMonitor<RemoteMediatorOptions>>()
-            .Get("http");
-        routeBuilder.MapPost(options.MediatorRemoteEndpoint, async (
-            [FromServices] MediatorRemoteEndpoint endpoint,
-            JsonObject jsonObject,
-            CancellationToken cancellationToken) =>
-        {
-            var jsonSerializerOptions = options.JsonSerializerOptions;
-            var result = await InvokeAsync(jsonObject, jsonSerializerOptions, endpoint, cancellationToken);
-            return Results.Json(result, jsonSerializerOptions);
-        });
-
-        return routeBuilder.MapPost(options.MediatorStreamRemoteEndpoint, async (
-            [FromServices] MediatorRemoteEndpoint endpoint,
-            [FromBody] JsonObject jsonObject,
-            HttpContext context,
-            CancellationToken cancellationToken) =>
-        {
-            var jsonSerializerOptions = options.JsonSerializerOptions;
-            var result = InvokeStreamAsync(jsonObject, jsonSerializerOptions, endpoint, cancellationToken);
-            await new ResultAsyncEnumerable<RemoteMediatorStreamResult>(result, jsonSerializerOptions)
-                .ExecuteStream(context.Response, cancellationToken);
-        });
-    }
-
     private static async Task<RemoteMediatorResult> InvokeAsync(JsonObject jsonObject,
-        JsonSerializerOptions jsonSerializerOptions,
+        RemoteMediatorOptions options,
         MediatorRemoteEndpoint endpoint, CancellationToken cancellationToken)
     {
-        var command = jsonObject.Deserialize<RemoteMediatorCommand>(jsonSerializerOptions);
+        var command = jsonObject.Deserialize<RemoteMediatorCommand>(options.JsonSerializerOptions);
         ArgumentNullException.ThrowIfNull(command);
 
         var result = await endpoint.InvokeAsync(command, cancellationToken);
@@ -90,10 +89,10 @@ public static class RemoteMediatorApplicationBuilderExtensions
     }
 
     private static IAsyncEnumerable<RemoteMediatorStreamResult> InvokeStreamAsync(JsonObject jsonObject,
-        JsonSerializerOptions jsonSerializerOptions,
+        RemoteMediatorOptions options,
         MediatorRemoteEndpoint endpoint, CancellationToken cancellationToken)
     {
-        var command = jsonObject.Deserialize<RemoteMediatorStreamCommand>(jsonSerializerOptions);
+        var command = jsonObject.Deserialize<RemoteMediatorStreamCommand>(options.JsonSerializerOptions);
         ArgumentNullException.ThrowIfNull(command);
 
         var result = endpoint.InvokeStreamAsync(command, cancellationToken);
