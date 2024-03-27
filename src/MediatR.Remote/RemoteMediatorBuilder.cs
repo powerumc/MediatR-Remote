@@ -1,7 +1,8 @@
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace MediatR.Remote.Extensions.DependencyInjection;
+namespace MediatR.Remote;
 
 public class RemoteMediatorBuilder
 {
@@ -16,7 +17,7 @@ public class RemoteMediatorBuilder
     }
 
     /// <summary>
-    /// Default HTTP endpoint
+    ///     Default HTTP endpoint
     /// </summary>
     internal string MediatorRemoteEndpoint => "mediator-remote";
 
@@ -28,7 +29,7 @@ public class RemoteMediatorBuilder
     }
 
     /// <summary>
-    /// Add a strategy with the specified name.
+    ///     Add a strategy with the specified name.
     /// </summary>
     /// <param name="name">Role name</param>
     /// <param name="serviceLifetime">Service lifetime</param>
