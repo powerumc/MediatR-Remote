@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -16,15 +16,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="MediatR" Version="12.0.1"/>
+    <ProjectReference Include="..\MediatR.Remote.Extensions.DependencyInjection\MediatR.Remote.Extensions.DependencyInjection.csproj"/>
+    <ProjectReference Include="..\MediatR.Remote\MediatR.Remote.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediatR.Remote\MediatR.Remote.csproj"/>
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.300.62"/>
   </ItemGroup>
 
 </Project>

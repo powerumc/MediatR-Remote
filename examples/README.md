@@ -36,8 +36,16 @@ curl -N http://localhost:5000/http/stream
 
 ## gRPC Tests
 
-```
+```bash
 curl http://localhost:5000/grpc/request
 curl http://localhost:5000/grpc/notification
 curl -N http://localhost:5000/grpc/stream
+```
+
+## AWS SQS Tests
+
+```bash
+docker exec -it localstack sh
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name public-api.fifo --attributes FifoQueue=true
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name internal-api2.fifo --attributes FifoQueue=true
 ```

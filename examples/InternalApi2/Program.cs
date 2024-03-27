@@ -1,5 +1,8 @@
 using System.Net;
 using System.Reflection;
+using Amazon.Runtime;
+using Amazon.SQS;
+using MediatR.Remote.AWS.SQS;
 using MediatR.Remote.Extensions.DependencyInjection;
 using MediatR.Remote.Grpc;
 using Messages;
@@ -19,6 +22,8 @@ services.Configure<KestrelServerOptions>(options =>
 
 var assemblies = new[] { Assembly.GetExecutingAssembly(), typeof(HelloRemoteRequest).Assembly };
 services.AddMediatR(serviceConfiguration => serviceConfiguration.RegisterServicesFromAssemblies(assemblies));
+
+// Configure HTTP
 services.AddRemoteMediatR("internal-api2", remoteBuilder =>
 {
     foreach (var section in builder.Configuration.GetRequiredSection("http").GetChildren())
@@ -28,11 +33,29 @@ services.AddRemoteMediatR("internal-api2", remoteBuilder =>
 });
 
 services.AddGrpc();
+
+// Configure gRPC
 services.AddRemoteMediatR<IGrpcMediator, GrpcMediator>("internal-api2", "grpc", remoteBuilder =>
 {
     foreach (var section in builder.Configuration.GetRequiredSection("grpc").GetChildren())
     {
         remoteBuilder.AddGrpcStrategy(section.Key, client => client.Address = new Uri(section.Value!));
+    }
+});
+
+// Configure AWS SQS
+services.AddRemoteMediatR<IAwsSqsMediator, AwsSqsMediator>("internal-api2", "aws-sqs", remoteBuilder =>
+{
+    foreach (var section in builder.Configuration.GetRequiredSection("aws-sqs").GetChildren())
+    {
+        remoteBuilder.AddSqsStrategy(section.Key,
+            options =>
+            {
+                options.Client = new AmazonSQSClient(new BasicAWSCredentials("", ""),
+                    new AmazonSQSConfig { ServiceURL = section.Value });
+                options.MessageGroupIdGenerator = (_, _) => "hello";
+                options.QueueUrl = section.Value!;
+            });
     }
 });
 
