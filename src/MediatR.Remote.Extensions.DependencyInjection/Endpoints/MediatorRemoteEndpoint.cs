@@ -47,12 +47,12 @@ internal class MediatorRemoteEndpoint
         HttpContext httpContext,
         JsonSerializerOptions jsonSerializerOptions)
     {
+        httpContext.Response.ContentType = MediaTypeNames.Application.Json;
+
         switch (command.Object)
         {
             case IRemoteRequest:
                 var result = await mediator.Send(command);
-
-                httpContext.Response.ContentType = MediaTypeNames.Application.Json;
                 await JsonSerializer.SerializeAsync(httpContext.Response.Body, result, jsonSerializerOptions);
                 break;
 
@@ -61,8 +61,6 @@ internal class MediatorRemoteEndpoint
                 break;
 
             case IRemoteStreamRequest:
-                httpContext.Response.ContentType = MediaTypeNames.Application.Json;
-
                 var streamCommand = new RemoteMediatorStreamCommand(command.Object, command.Spans);
                 var stream = mediator.CreateStream(streamCommand);
 
