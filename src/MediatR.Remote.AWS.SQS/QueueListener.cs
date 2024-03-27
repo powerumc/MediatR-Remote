@@ -1,5 +1,4 @@
 ﻿using Amazon.SQS.Model;
-using MediatR.Remote.Extensions.DependencyInjection.Endpoints;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -7,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace MediatR.Remote.AWS.SQS;
 
 public class QueueListener(
-    MediatorRemoteEndpoint endpoint,
+    IQueueMessageProcessor messageProcessor,
     IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions,
     IOptionsMonitor<AwsSqsOptions> sqsOptions,
     ILogger<QueueListener> logger)
@@ -60,8 +59,7 @@ public class QueueListener(
                 }
                 catch (QueueDoesNotExistException e)
                 {
-                    logger.LogError(e, "Queue does not exist");
-                    throw;
+                    await messageProcessor.CreateQueueIfNotExistsAsync(roleName, stoppingToken);
                 }
                 catch (Exception e)
                 {
@@ -83,20 +81,14 @@ public class QueueListener(
             {
                 var command = await mediatorOptions.Serializer.DeserializeFromStringAsync<RemoteMediatorCommand>(
                     message.Body, cancellationToken);
-                await endpoint.InvokeAsync(command!, cancellationToken);
-                await DeleteMessageAsync(options, message, cancellationToken);
+                await messageProcessor.OnMessageAsync(command!, cancellationToken);
+                await messageProcessor.AcknowledgeMessageAsync(options, message, cancellationToken);
             }
             catch (Exception e)
             {
                 logger.LogError(e, "Error while invoking command: {MessageId}", message.MessageAttributes);
+                await messageProcessor.OnMessageExceptionAsync(options, message, e, cancellationToken);
             }
         }
-    }
-
-    private static async Task DeleteMessageAsync(AwsSqsOptions options, Message message,
-        CancellationToken cancellationToken)
-    {
-        var request = new DeleteMessageRequest(options.QueueUrl, message.ReceiptHandle);
-        await options.Client.DeleteMessageAsync(request, cancellationToken);
     }
 }
