@@ -1,27 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <LangVersion>default</LangVersion>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Authors>Junil Um</Authors>
-    <Description>The MediatR.Remote library is an extension library of the IMediator implementation that distributes and relays remote objects.</Description>
-    <PackageProjectUrl>https://github.com/powerumc/MediatR-Remote</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/powerumc/MediatR-Remote/blob/main/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/powerumc/MediatR-Remote</RepositoryUrl>
-    <PackageTags>mediator,mediatr,mediator-pattern,mediatr-library,mediatr-extension</PackageTags>
+    <IsPackable>True</IsPackable>
+    <TargetFrameworks>netstandard2.1;$(TargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="MediatR" Version="12.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
-    <PackageReference Include="System.Text.Json" Version="6.0.5" />
+    <PackageReference Include="MediatR" Version="12.0.1"/>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="$(MicrosoftPackageVersion)"/>
+    <PackageReference Include="System.Net.Http.Json" Version="$(MicrosoftPackageVersion)"/>
+    <PackageReference Include="System.Text.Json" Version="$(MicrosoftPackageVersion)"/>
   </ItemGroup>
 
 </Project>

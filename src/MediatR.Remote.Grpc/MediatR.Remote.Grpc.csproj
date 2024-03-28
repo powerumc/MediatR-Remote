@@ -1,16 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <LangVersion>default</LangVersion>
-    <Authors>Junil Um</Authors>
-    <Description>The MediatR.Remote library is an extension library of the IMediator implementation that distributes and relays remote objects.</Description>
-    <PackageProjectUrl>https://github.com/powerumc/MediatR-Remote</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/powerumc/MediatR-Remote/blob/main/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/powerumc/MediatR-Remote</RepositoryUrl>
-    <PackageTags>mediator,mediatr,mediator-pattern,mediatr-library,mediatr-extension</PackageTags>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>

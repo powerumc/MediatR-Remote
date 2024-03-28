@@ -1,26 +1,50 @@
 <Project>
-    <!-- 프로젝트 공통 설정 -->
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>default</LangVersion>
-    </PropertyGroup>
+  <!-- 프로젝트 공통 설정 -->
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>default</LangVersion>
+    <IsPackable>true</IsPackable>
+    <Authors>Junil Um</Authors>
+    <Description>The MediatR.Remote library is an extension library of the IMediator implementation that distributes and relays remote objects.</Description>
+    <PackageProjectUrl>https://github.com/powerumc/MediatR-Remote</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/powerumc/MediatR-Remote/blob/main/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/powerumc/MediatR-Remote</RepositoryUrl>
+    <PackageTags>mediator,mediatr,mediator-pattern,mediatr-library,mediatr-extension</PackageTags>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
 
-    <!-- 프로젝트 공통 속성 -->
-    <PropertyGroup>
-        <MicrosoftPackageVersion>8.0.0</MicrosoftPackageVersion>
-    </PropertyGroup>
+  <!-- 프로젝트 공통 속성 -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <MicrosoftPackageVersion>6.0.0</MicrosoftPackageVersion>
+  </PropertyGroup>
 
-    <!-- 패키지 공통 설정 -->
-    <ItemGroup>
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="9.15.0.81779">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="IDisposableAnalyzers" Version="4.0.7">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <MicrosoftPackageVersion>6.0.0</MicrosoftPackageVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0'">
+    <MicrosoftPackageVersion>7.0.0</MicrosoftPackageVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <MicrosoftPackageVersion>8.0.0</MicrosoftPackageVersion>
+  </PropertyGroup>
+
+  <!-- 패키지 공통 설정 -->
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.15.0.81779">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

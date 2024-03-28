@@ -26,8 +26,7 @@ jobs:
       with:
         versionSpec: '5.x'
     - run: |
-        dotnet pack src/MediatR.Remote -c Release
-        dotnet pack src/MediatR.Remote.Extensions.DependencyInjection -c Release
+        dotnet pack -c Release
     - name: Publish the package to nuget.org
       run: dotnet nuget push src/*/bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
       env:
