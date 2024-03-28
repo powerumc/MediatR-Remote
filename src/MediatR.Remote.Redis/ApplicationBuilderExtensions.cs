@@ -18,15 +18,22 @@ public static class ApplicationBuilderExtensions
             .Get(protocolName);
 
         var processor = serviceProvider.GetRequiredService<RedisPubSubMessageProcessor>();
-        var channel = redisOptions.ChannelSelector(serviceProvider, remoteOptions.MyRoleNames.First());
-        var subscriber = redisOptions.SubscriberSelector(serviceProvider, redisOptions.ConnectionMultiplexer);
-        _ = subscriber.SubscribeAsync(channel,
-            async (_, value) => await HandleAsync(value, remoteOptions, processor, redisOptions));
+        var subscriber = redisOptions.Subscriber(serviceProvider, redisOptions.ConnectionMultiplexer);
+        var subscribeChannels =
+            redisOptions.SubscribeChannels(serviceProvider, remoteOptions.MyRoleNames.First());
+
+        foreach (var channel in subscribeChannels)
+        {
+            subscriber.Subscribe(channel, async (_, value) =>
+            {
+                await HandleAsync(value, remoteOptions, processor, redisOptions);
+            });
+        }
 
         var lifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
         lifetime.ApplicationStopping.Register(() =>
         {
-            subscriber.Unsubscribe(channel);
+            subscriber.UnsubscribeAll();
         });
 
         return builder.WebApplication;

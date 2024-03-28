@@ -15,12 +15,15 @@ public class RedisMediatorOptions
     /// <summary>
     ///     Subscriber selector.
     /// </summary>
-    public Func<IServiceProvider, ConnectionMultiplexer, ISubscriber> SubscriberSelector { get; set; }
+    public Func<IServiceProvider, ConnectionMultiplexer, ISubscriber> Subscriber { get; set; }
         = (provider, multiplexer) => multiplexer.GetSubscriber();
+
+    public Func<IServiceProvider, RemoteMediatorCommand, string, RedisChannel> MessageChannelGenerator { get; set; }
+        = (provider, command, targetRoleName) => targetRoleName;
 
     /// <summary>
     ///     Channel selector. Default is to use the role name.
     /// </summary>
-    public Func<IServiceProvider, string, RedisChannel> ChannelSelector { get; set; }
-        = (provider, roleName) => roleName;
+    public Func<IServiceProvider, string, IEnumerable<RedisChannel>> SubscribeChannels { get; set; }
+        = (provider, roleName) => new[] { new RedisChannel(roleName, RedisChannel.PatternMode.Auto) };
 }

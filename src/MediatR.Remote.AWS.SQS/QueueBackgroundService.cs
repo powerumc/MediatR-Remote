@@ -75,6 +75,15 @@ public class QueueBackgroundService(
     {
         logger.LogInformation("Received {Count} messages", messages.Count);
 
+        var entries = messages
+            .Select(o => new ChangeMessageVisibilityBatchRequestEntry(o.MessageId, o.ReceiptHandle)
+            {
+                VisibilityTimeout = (int)TimeSpan.FromSeconds(10).TotalSeconds
+            })
+            .ToList();
+        var request = new ChangeMessageVisibilityBatchRequest(options.QueueUrl, entries);
+        await options.Client.ChangeMessageVisibilityBatchAsync(request, cancellationToken);
+
         foreach (var message in messages)
         {
             try
@@ -82,11 +91,13 @@ public class QueueBackgroundService(
                 var command = await mediatorOptions.Serializer.DeserializeFromStringAsync<RemoteMediatorCommand>(
                     message.Body, cancellationToken);
                 await messageProcessor.OnMessageAsync(command!, cancellationToken);
+
+                logger.LogInformation("Message {MessageId} acknowledged", message.MessageId);
                 await messageProcessor.AcknowledgeMessageAsync(options, message, cancellationToken);
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Error while invoking command: {MessageId}", message.MessageAttributes);
+                logger.LogError(e, "Message {MessageId} processing failed", message.MessageId);
                 await messageProcessor.OnMessageExceptionAsync(options, message, e, cancellationToken);
             }
         }

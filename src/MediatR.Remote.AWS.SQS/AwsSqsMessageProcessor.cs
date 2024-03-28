@@ -52,8 +52,6 @@ public class AwsSqsMessageProcessor(
             QueueUrl = options.QueueUrl, ReceiptHandle = message.ReceiptHandle
         };
         await options.Client.DeleteMessageAsync(deleteMessageRequest, cancellationToken);
-
-        logger.LogInformation("Message {MessageId} acknowledged", message.MessageId);
     }
 
     public virtual async Task OnMessageAsync(RemoteMediatorCommand command, CancellationToken cancellationToken)
@@ -61,17 +59,9 @@ public class AwsSqsMessageProcessor(
         await endpoint.InvokeAsync(command, cancellationToken);
     }
 
-    public virtual async Task OnMessageExceptionAsync(AwsSqsOptions options, Message message, Exception exception,
+    public virtual Task OnMessageExceptionAsync(AwsSqsOptions options, Message message, Exception exception,
         CancellationToken cancellationToken)
     {
-        var request = new ChangeMessageVisibilityRequest
-        {
-            QueueUrl = options.QueueUrl,
-            ReceiptHandle = message.ReceiptHandle,
-            VisibilityTimeout = (int)TimeSpan.FromMinutes(1).TotalSeconds
-        };
-        await options.Client.ChangeMessageVisibilityAsync(request, cancellationToken);
-
-        logger.LogError(exception, "Message {MessageId} processing failed", message.MessageId);
+        return Task.CompletedTask;
     }
 }

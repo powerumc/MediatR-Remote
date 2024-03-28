@@ -22,8 +22,8 @@ public class RemoteRedisStrategy(
         var json = await mediatorOptions.Serializer.SerializeAsStringAsync(nextCommand, cancellationToken);
         var protocolRoleName = ProtocolRoleName.Generate(nextCommand.ProtocolName, targetRoleName);
         var options = redisOptions.Get(protocolRoleName);
-        var channel = options.ChannelSelector(serviceProvider, targetRoleName);
-        var subscriber = options.SubscriberSelector(serviceProvider, options.ConnectionMultiplexer);
+        var channel = options.MessageChannelGenerator(serviceProvider, nextCommand, targetRoleName);
+        var subscriber = options.Subscriber(serviceProvider, options.ConnectionMultiplexer);
         await subscriber.PublishAsync(channel, json, CommandFlags.FireAndForget);
     }
 

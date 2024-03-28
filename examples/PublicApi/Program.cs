@@ -61,7 +61,8 @@ services.AddRemoteMediatR<IRedisMediator, RedisMediator>("public-api", "redis", 
         remoteBuilder.AddRedisStrategy(section.Key, options =>
         {
             options.ConnectionMultiplexer = ConnectionMultiplexer.Connect(section.Value);
-            options.SubscriberSelector = (_, connectionMultiplexer) => connectionMultiplexer.GetSubscriber();
+            options.Subscriber = (_, connectionMultiplexer) => connectionMultiplexer.GetSubscriber();
+            options.MessageChannelGenerator = (_, _, targetRoleName) => $"{targetRoleName}:Group1";
         });
     }
 });
