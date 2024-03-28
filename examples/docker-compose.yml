@@ -9,6 +9,8 @@ services:
     depends_on:
       localstack:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "5000:5000"
       - "5001:5001"
@@ -23,6 +25,8 @@ services:
     depends_on:
       localstack:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "5010:5010"
       - "5011:5011"
@@ -36,6 +40,8 @@ services:
       dockerfile: examples/InternalApi2/Dockerfile
     depends_on:
       localstack:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     ports:
       - "5020:5020"
@@ -57,28 +63,21 @@ services:
       - SQS_ENDPOINT_STRATEGY=off
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      #- ./docker-compose-files/aws-sqs-init.sh:/etc/localstack/init/ready.d/aws-sqs-init.sh
     ports:
       - "4566:4566"
       - "8080:8080"
     networks:
       - internal
-
-#  create-aws-resource:
-#    restart: no
-#    image: amazon/aws-cli:2.11.0
-#    depends_on:
-#      aws:
-#        condition: service_healthy
-#    environment:
-#      - AWS_DEFAULT_REGION=us-east-1
-#      - AWS_ACCESS_KEY_ID=aaa
-#      - AWS_SECRET_ACCESS_KEY=aaa
-#    entrypoint: [ "sh", "-c" ]
-#    command: [ "aws --endpoint-url=http://aws:4566 sqs create-queue --queue-name public-api.fifo --attributes FifoQueue=true &&
-#       aws --endpoint-url=http://aws:4566 sqs create-queue --queue-name internal-api2.fifo --attributes FifoQueue=true" ]
-#    networks:
-#      - internal
+  
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+    networks:
+      - internal
 
 networks:
   internal:

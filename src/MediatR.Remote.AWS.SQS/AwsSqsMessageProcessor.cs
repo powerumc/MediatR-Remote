@@ -7,55 +7,15 @@ using Microsoft.Extensions.Options;
 namespace MediatR.Remote.AWS.SQS;
 
 /// <summary>
-///     SQS message processor.
-/// </summary>
-public interface IQueueMessageProcessor
-{
-    /// <summary>
-    ///     Create queue if not exists.
-    /// </summary>
-    /// <param name="roleName">Role name</param>
-    /// <param name="cancellationToken">CancellationToken</param>
-    Task CreateQueueIfNotExistsAsync(string roleName, CancellationToken cancellationToken);
-
-    /// <summary>
-    ///     Acknowledge message.
-    ///     If message is processed successfully, acknowledge the message.(delete message)
-    /// </summary>
-    /// <param name="options">SQS Options</param>
-    /// <param name="message">SQS Message</param>
-    /// <param name="cancellationToken">CancellationToken</param>
-    Task AcknowledgeMessageAsync(AwsSqsOptions options, Message message, CancellationToken cancellationToken);
-
-    /// <summary>
-    ///     Message processing.
-    /// </summary>
-    /// <param name="command">Command</param>
-    /// <param name="cancellationToken">CancellationToken</param>
-    Task OnMessageAsync(RemoteMediatorCommand command, CancellationToken cancellationToken);
-
-    /// <summary>
-    ///     Message processing exception.
-    /// </summary>
-    /// <param name="options">SQS Options</param>
-    /// <param name="message">SQS Message</param>
-    /// <param name="exception">Exception</param>
-    /// <param name="cancellationToken">CancellationToken</param>
-    /// <returns></returns>
-    Task OnMessageExceptionAsync(AwsSqsOptions options, Message message, Exception exception,
-        CancellationToken cancellationToken);
-}
-
-/// <summary>
 ///     Queue message processor.
 /// </summary>
-public class QueueMessageProcessor(
+public class AwsSqsMessageProcessor(
     IServiceProvider serviceProvider,
     MediatorRemoteEndpoint endpoint,
     IOptionsMonitor<AwsSqsOptions> sqsOptions,
-    ILogger<QueueBackgroundService> logger) : IQueueMessageProcessor
+    ILogger<QueueBackgroundService> logger) : IQueueMessageProcessor<AwsSqsOptions, Message>
 {
-    public async Task CreateQueueIfNotExistsAsync(string roleName, CancellationToken cancellationToken)
+    public virtual async Task CreateQueueIfNotExistsAsync(string roleName, CancellationToken cancellationToken)
     {
         var protocolRoleName = ProtocolRoleName.Generate("aws-sqs", roleName);
         var options = sqsOptions.Get(protocolRoleName);
@@ -84,7 +44,7 @@ public class QueueMessageProcessor(
         }
     }
 
-    public async Task AcknowledgeMessageAsync(AwsSqsOptions options, Message message,
+    public virtual async Task AcknowledgeMessageAsync(AwsSqsOptions options, Message message,
         CancellationToken cancellationToken)
     {
         var deleteMessageRequest = new DeleteMessageRequest
@@ -96,12 +56,12 @@ public class QueueMessageProcessor(
         logger.LogInformation("Message {MessageId} acknowledged", message.MessageId);
     }
 
-    public async Task OnMessageAsync(RemoteMediatorCommand command, CancellationToken cancellationToken)
+    public virtual async Task OnMessageAsync(RemoteMediatorCommand command, CancellationToken cancellationToken)
     {
         await endpoint.InvokeAsync(command, cancellationToken);
     }
 
-    public async Task OnMessageExceptionAsync(AwsSqsOptions options, Message message, Exception exception,
+    public virtual async Task OnMessageExceptionAsync(AwsSqsOptions options, Message message, Exception exception,
         CancellationToken cancellationToken)
     {
         var request = new ChangeMessageVisibilityRequest

@@ -5,8 +5,10 @@ using Amazon.SQS;
 using MediatR.Remote.AWS.SQS;
 using MediatR.Remote.Extensions.DependencyInjection;
 using MediatR.Remote.Grpc;
+using MediatR.Remote.Redis;
 using Messages;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -59,6 +61,19 @@ services.AddRemoteMediatR<IAwsSqsMediator, AwsSqsMediator>("internal-api2", "aws
     }
 });
 
+// Configure Redis
+services.AddRemoteMediatR<IRedisMediator, RedisMediator>("internal-api2", "redis", remoteBuilder =>
+{
+    foreach (var section in builder.Configuration.GetRequiredSection("redis").GetChildren())
+    {
+        remoteBuilder.AddRedisStrategy(section.Key, options =>
+        {
+            options.ConnectionMultiplexer = ConnectionMultiplexer.Connect(section.Value);
+            options.SubscriberSelector = (_, connectionMultiplexer) => connectionMultiplexer.GetSubscriber();
+        });
+    }
+});
+
 var app = builder.Build();
 app.UseAuthorization();
 app.MapControllers();
@@ -66,5 +81,6 @@ app.MapControllers();
 app.UseRouting();
 app.UseRemoteMediatR(routeBuilder => routeBuilder.MapHttpListener().AllowAnonymous());
 app.UseRemoteMediatR(applicationBuilder => applicationBuilder.UseGrpcListener());
+app.UseRemoteMediatR(applicationBuilder => applicationBuilder.UseRedisListener());
 
 app.Run();
