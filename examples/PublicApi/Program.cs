@@ -1,4 +1,3 @@
-using System.Net;
 using System.Reflection;
 using Amazon.Runtime;
 using Amazon.SQS;
@@ -7,7 +6,6 @@ using MediatR.Remote.Extensions.DependencyInjection;
 using MediatR.Remote.Grpc;
 using MediatR.Remote.Redis;
 using Messages;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +14,6 @@ var services = builder.Services;
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.Configure<KestrelServerOptions>(options =>
-{
-    options.Listen(IPAddress.Any, 5000, listenOptions => listenOptions.Protocols = HttpProtocols.Http1);
-    options.Listen(IPAddress.Any, 5001, listenOptions => listenOptions.Protocols = HttpProtocols.Http2);
-});
 
 var assemblies = new[] { Assembly.GetExecutingAssembly(), typeof(HelloRemoteRequest).Assembly };
 services.AddMediatR(serviceConfiguration => serviceConfiguration.RegisterServicesFromAssemblies(assemblies));

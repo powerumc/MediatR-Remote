@@ -1,9 +1,7 @@
-using System.Net;
 using System.Reflection;
 using MediatR.Remote.Extensions.DependencyInjection;
 using MediatR.Remote.Grpc;
 using Messages;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -11,11 +9,6 @@ var services = builder.Services;
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.Configure<KestrelServerOptions>(options =>
-{
-    options.Listen(IPAddress.Any, 5010, listenOptions => listenOptions.Protocols = HttpProtocols.Http1);
-    options.Listen(IPAddress.Any, 5011, listenOptions => listenOptions.Protocols = HttpProtocols.Http2);
-});
 
 var assemblies = new[] { Assembly.GetExecutingAssembly(), typeof(HelloRemoteRequest).Assembly };
 services.AddMediatR(serviceConfiguration => serviceConfiguration.RegisterServicesFromAssemblies(assemblies));
