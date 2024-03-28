@@ -23,18 +23,21 @@ public class AwsSqsOptions
 
     /// <summary>
     ///     SQS Message GroupId Generator
+    ///     Default is to generate an empty string.
     /// </summary>
     public Func<IServiceProvider, RemoteMediatorCommand, string> MessageGroupIdGenerator { get; set; } =
         (_, _) => string.Empty;
 
     /// <summary>
-    ///     SQS Message DeduplicationId Generator
+    ///     SQS Message DeduplicationId Generator.
+    ///     Default is to generate a new Guid.
     /// </summary>
     public Func<IServiceProvider, RemoteMediatorCommand, string> MessageDeduplicationIdGenerator { get; set; } =
         (_, _) => Guid.NewGuid().ToString();
 
     /// <summary>
-    ///     When creating a queue, this function will be called to get the attributes to set on the queue
+    ///     When creating a queue, this function will be called to get the attributes to set on the queue.
+    ///     Default is to create a FIFO queue.
     /// </summary>
     public Func<IServiceProvider, Dictionary<string, string>> AttributesOnCreateQueue { get; set; } =
         _ => new Dictionary<string, string> { { QueueAttributeName.FifoQueue, "True" } };

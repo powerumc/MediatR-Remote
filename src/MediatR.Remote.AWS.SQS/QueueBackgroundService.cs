@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace MediatR.Remote.AWS.SQS;
 
 public class QueueBackgroundService(
-    IQueueMessageProcessor messageProcessor,
+    AwsSqsMessageProcessor messageProcessor,
     IOptionsMonitor<RemoteMediatorOptions> remoteMediatorOptions,
     IOptionsMonitor<AwsSqsOptions> sqsOptions,
     ILogger<QueueBackgroundService> logger)
