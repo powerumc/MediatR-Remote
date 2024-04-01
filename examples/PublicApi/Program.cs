@@ -1,9 +1,11 @@
 using System.Reflection;
 using Amazon.Runtime;
 using Amazon.SQS;
+using Confluent.Kafka;
 using MediatR.Remote.AWS.SQS;
 using MediatR.Remote.Extensions.DependencyInjection;
 using MediatR.Remote.Grpc;
+using MediatR.Remote.Kafka;
 using MediatR.Remote.Redis;
 using Messages;
 using StackExchange.Redis;
@@ -63,6 +65,25 @@ services.AddRemoteMediatR<IRedisMediator, RedisMediator>("public-api", "redis", 
             options.ConnectionMultiplexer = ConnectionMultiplexer.Connect(section.Value);
             options.Subscriber = (_, connectionMultiplexer) => connectionMultiplexer.GetSubscriber();
             options.MessageChannelGenerator = (_, _, targetRoleName) => $"{targetRoleName}:Group1";
+        });
+    }
+});
+
+// Configure Kafka
+services.AddRemoteMediatR<IKafkaMediator, KafkaMediator>("public-api", "kafka", remoteBuilder =>
+{
+    foreach (var section in builder.Configuration.GetRequiredSection("kafka").GetChildren())
+    {
+        remoteBuilder.AddKafkaStrategy(section.Key, options =>
+        {
+            options.Producer =
+                new ProducerBuilder<string, string>(new ProducerConfig { BootstrapServers = section.Value }).Build();
+            options.Consumer = new ConsumerBuilder<string, string>(new ConsumerConfig
+            {
+                BootstrapServers = section.Value, GroupId = section.Key, AutoOffsetReset = AutoOffsetReset.Earliest
+            }).Build();
+            options.AdminClient =
+                new AdminClientBuilder(new AdminClientConfig { BootstrapServers = section.Value }).Build();
         });
     }
 });

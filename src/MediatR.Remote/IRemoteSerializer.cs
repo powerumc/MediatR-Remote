@@ -19,9 +19,14 @@ public static class RemoteSerializerExtensions
         return await reader.ReadToEndAsync();
     }
 
-    public static async Task<T?> DeserializeFromStringAsync<T>(this IRemoteSerializer serializer, string value,
-        CancellationToken cancellationToken = default)
+    public static async Task<T?> DeserializeFromStringAsync<T>(this IRemoteSerializer serializer, string? value,
+        CancellationToken cancellationToken = default) where T : class
     {
+        if (value is null)
+        {
+            return null;
+        }
+
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(value));
         return await serializer.DeserializeAsync<T>(stream, cancellationToken);
     }

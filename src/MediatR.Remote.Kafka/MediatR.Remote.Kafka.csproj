@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediatR.Remote.Extensions.DependencyInjection\MediatR.Remote.Extensions.DependencyInjection.csproj"/>
+    <ProjectReference Include="..\MediatR.Remote\MediatR.Remote.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="2.3.0"/>
+  </ItemGroup>
+
+</Project>
