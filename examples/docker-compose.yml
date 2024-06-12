@@ -12,8 +12,8 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "5000:5000"
-      - "5001:5001"
+      - "8100:8100"
+      - "8101:8101"
     networks:
       - internal
   
@@ -28,8 +28,8 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "5010:5010"
-      - "5011:5011"
+      - "8110:8110"
+      - "8111:8111"
     networks:
       - internal
   
@@ -44,8 +44,8 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "5020:5020"
-      - "5021:5021"
+      - "8120:8120"
+      - "8121:8121"
     networks:
       - internal
   

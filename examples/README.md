@@ -9,7 +9,7 @@ docker compose up --build
 ### Test `IRequest`
 
 ```bash
-curl http://localhost:5000/http/request
+curl http://localhost:8100/http/request
 
 # Response
 {"message":"OK - HELLO REQUEST"}
@@ -17,7 +17,7 @@ curl http://localhost:5000/http/request
 
 ### Test `INotification`
 ```bash
-curl http://localhost:5000/http/notification
+curl http://localhost:8100/http/notification
 
 # No Response
 # Print on Internal2 console
@@ -28,7 +28,7 @@ HELLO NOTIFICATION
 
 It works like an `IAsyncEnumerable<T>`.
 ```bash
-curl -N http://localhost:5000/http/stream
+curl -N http://localhost:8100/http/stream
 
 [{"message":"OK - HELLO STREAM 0"},{"message":"OK - HELLO STREAM 1"},{"message":"OK - HELLO STREAM 2"},{"message":"OK - HELLO STREAM 3"},{"message":"OK - HELLO STREAM 4"},{"message":"OK - HELLO STREAM 5"},{"message":"OK - HELLO STREAM 6"},{"message":"OK - HELLO STREAM 7"},{"message":"OK - HELLO STREAM 8"},{"message":"OK - HELLO STREAM 9"}]
 ```
@@ -37,9 +37,9 @@ curl -N http://localhost:5000/http/stream
 ## gRPC Tests
 
 ```bash
-curl http://localhost:5000/grpc/request
-curl http://localhost:5000/grpc/notification
-curl -N http://localhost:5000/grpc/stream
+curl http://localhost:8100/grpc/request
+curl http://localhost:8100/grpc/notification
+curl -N http://localhost:8100/grpc/stream
 ```
 
 ## AWS SQS Tests
